@@ -1,3 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {background-color: powderblue;}
+h1   {color: blue;}
+p    {color: red;}
+  /* Set height of body and the document to 100% to enable "full page tabs" */
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: Arial;
+}
+
+/* Style tab links */
+.tablink {
+  background-color: #555;
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 17px;
+  width: 25%;
+}
+
+.tablink:hover {
+  background-color: #777;
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+  color: white;
+  display: none;
+  padding: 100px 20px;
+  height: 100%;
+}
+
+#Home {background-color: red;}
+#News {background-color: green;}
+#Contact {background-color: blue;}
+#About {background-color: orange;}
+</style>
+</head>
+<body>
+
 <button class="tablink" onclick="openPage('Home', this, 'red')">Home</button>
 <button class="tablink" onclick="openPage('News', this, 'green')" id="defaultOpen">News</button>
 <button class="tablink" onclick="openPage('Contact', this, 'blue')">Contact</button>
@@ -22,3 +69,7 @@
   <h3>About</h3>
   <p>Who we are and what we do.</p>
 </div>
+
+</body>
+</html>
+
