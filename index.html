@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-* {box-sizing: border-box}
+* {box-sizing: content-box}
 * {background-color: black}
 
 /* Set height of body and the document to 100% */
@@ -15,6 +15,17 @@ body, html {
 }
 
 /* Style tab links */
+.tablink1 {
+  background-color: #000000;
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0px 0px;
+  font-size: 17px;
+}
+
 .tablink {
   background-color: #000000;
   color: white;
@@ -22,12 +33,13 @@ body, html {
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 14px 16px;
+  padding: 14px 12px;
   font-size: 17px;
 }
 
 .tablink:hover {
   background-color: #000000;
+  opacity: 0.7;
 }
 
 /* Style the tab content (and add height:100% for full page content) */
@@ -45,8 +57,9 @@ table.center {
 
 #Home {background-color: black;}
 #Matches {background-color: black;}
-#Contact {background-color: black;}
 #Tournament {background-color: black;}
+#Teams {background-color: black;}
+#Contact {background-color: black;}
 </style>
 </head>
 <body>
@@ -54,7 +67,9 @@ table.center {
     <tr>
       <td>
         <button class="tablink" onclick="openPage('Home', this, 'black')" id="defaultOpen"><img src="hartimage.png" alt="hartImage"></button>
+        <button class="tablink" onclick="openPage('Home', this, 'black')" id="defaultOpen">Home</button>
         <button class="tablink" onclick="openPage('Matches', this, 'black')">Matches</button>
+        <button class="tablink" onclick="openPage('Teams', this, 'black')">Teams</button>
         <button class="tablink" onclick="openPage('Contact', this, 'black')">Contact</button>
         <button class="tablink" onclick="openPage('Tournament', this, 'black')">Tournament</button>
         <button class="tablink" title="opens in new tab" onclick="window.open('https://www.surridgesport.com/hart-youth-fc','_blank')">Club Shop</button>
@@ -99,33 +114,28 @@ var lrcode = '318953518'
 <script language="Javascript" type="text/javascript" src="https://fulltime.thefa.com/client/api/cs1.js"></script> 
 </div>
 
+<div id="Teams" class="tabcontent">
+  <p>We have Boys and Girls teams across the age groups and welcome new members.  We also have adult football and new links to a Womens Walking football team.</p>
+  <p>Please use the Contact Menu option to get in touch with us if you have an enquiry.</p>
+  <h3>U6 Development Squad</h3>
+  <p>At Hart FC our aim within the U6’s is to create a friendly, safe and fun environment for the children to enjoy training sessions focusing on the FUNdamentals of football and Agility, Balance and coordination.</p>
+  <p>Players train each week until they reach year 2 at school, when they will then have the opportunity to join a league with their Hart FC team mates.</p>
+  <p>We welcome new players and train weekly on a Saturday between 2-3pm at Ancells Farm Park playing fields. (September through until May) – We realise children this age could potentially be trying football for the first time and for this reason the first 2 taster sessions are free of charge before you decide whether to register and sign up your child into Hart Youth FC.</p>
+  <h3>U7 & U8 Girls Teams</h3>
+  <p>We have started this season with two U7 & U8 Girls teams who train and play together on Friday evening indoors and play matches in the NEHYL on Sunday mornings.</p>
+  <h3>U7 - U18 Mixed Teams</h3>
+  <p>We have various mixed teams thorugh the age groups who train Tuesdays and Wednesdays and play in NEHYL on Satursday mornings. If you would like to learn more then please get in touch.</p>
+  <h3>Adult Friday Night Mixed Football - FNF@hartyouthfc.uk</h3>
+  <h3>Womens Walking Football - coming soon</h3>
+</div>
+
 <div id="Contact" class="tabcontent">
-  <br></br>
   <h3>Contacts</h3>
-  <p>Hart FC Committee:</p>
-  <p>information@hartyouthfc.uk</p>
-  <p>secretary@hartyouthfc.uk</p>
-  <p>chairperson@hartyouthfc.uk</p>
-  <br></br>
-  <p>Teams</p>
-  <p>U6 developement Squad - U6@hartyouthfc.uk</p>
-  <p>U7 Teams - U7@hartyouthfc.uk</p>
-  <p>U8 Teams - U8@hartyouthfc.uk</p>
-  <p>U7 and U8 Girls Teams - U8Girls@hartyouthfc.uk</p>
-  <p>U9 Teams - U9@hartyouthfc.uk</p>
-  <p>U10 Teams - U10@hartyouthfc.uk</p>
-  <p>U11 Teams - U11@hartyouthfc.uk</p>
-  <p>U12 Teams - U12@hartyouthfc.uk</p>
-  <p>U13 Teams - U13@hartyouthfc.uk</p>
-  <p>U14 Teams - U14@hartyouthfc.uk</p>
-  <p>U15 Teams - U15@hartyouthfc.uk</p>
-  <p>U18 Teams - U18@hartyouthfc.uk</p>
-  <p>Friday Night Mixed Adult Football - FNF@hartyouthfc.uk</p>
-  <p>Womens Walking Football - coming soon</p>
+  <p>Feel free to email us here <a href="mailto:information@hartyouthfc.uk"><i class="fa fa-envelope" style="font-size:20px;color:red"></i></a> or use the form below.</p>
+  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfw0SVpYOiT3iUx9OqR8-8KpSYcGLl9J1djHbbb97OIQuvxfQ/viewform?embedded=true" width="640" height="1635" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
 </div>
 
 <div id="Tournament" class="tabcontent">
-  <br></br>
   <h3>Tournament</h3>
   <h3><img src="HartTourney.jpg" alt="HartTourney"></h3>
   <p>The first ever Hart Youth FC tournament coming soon!</p>
