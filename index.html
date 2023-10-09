@@ -6,6 +6,39 @@
 <style>
 * {box-sizing: content-box}
 * {background-color: black}
+#navbar {
+  overflow: hidden;
+  background-color: #000000;
+}
+
+#navbar a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+#navbar a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.content {
+  padding: 16px;
+}
+
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+.sticky + .content {
+  padding-top: 60px;
+}
 
 div.gallery {
   border: 0px solid #000000;
@@ -102,19 +135,35 @@ table.center {
   <table>
     <tr>
       <td>
-        <button class="tablink" onclick="openPage('Home', this, 'black')" id="defaultOpen"><img src="hartimage.png" alt="hartImage"></button>
-        <button class="tablink" onclick="openPage('Matches', this, 'black')">Matches</button>
-        <button class="tablink" onclick="openPage('Teams', this, 'black')">Teams</button>
-        <button class="tablink" onclick="openPage('Contact', this, 'black')">Contact</button>
-        <button class="tablink" onclick="openPage('Tournament', this, 'black')">Tourny</button>
-        <button class="tablink" title="opens in new tab" onclick="window.open('https://www.surridgesport.com/hart-youth-fc','_blank')">Shop</button>
-        <button class="tablink" title="opens in new tab" onclick="window.open('http://www.nehyl.org.uk/','_blank')">NEHYL</button>
-        <button class="tablink" title="opens in new tab" onclick="window.open('https://www.facebook.com/hartyouthfc/','_blank')"><i class="fa fa-facebook"></button>
-        <button class="tablink" title="opens in new tab" onclick="window.open('https://twitter.com/hartyouthfc','_blank')"><i class="fa fa-twitter"></i></button>
-      </td>
+        <div id="navbar">
+          <button class="tablink" onclick="openPage('Home', this, 'black')" id="defaultOpen"><img src="hartimage.png" alt="hartImage"></button>
+          <button class="tablink" onclick="openPage('Matches', this, 'black')">Matches</button>
+          <button class="tablink" onclick="openPage('Teams', this, 'black')">Teams</button>
+          <button class="tablink" onclick="openPage('Contact', this, 'black')">Contact</button>
+          <button class="tablink" onclick="openPage('Tournament', this, 'black')">Tourny</button>
+          <button class="tablink" title="opens in new tab" onclick="window.open('https://www.surridgesport.com/hart-youth-fc','_blank')">Shop</button>
+          <button class="tablink" title="opens in new tab" onclick="window.open('http://www.nehyl.org.uk/','_blank')">NEHYL</button>
+          <button class="tablink" title="opens in new tab" onclick="window.open('https://www.facebook.com/hartyouthfc/','_blank')"><i class="fa fa-facebook"></button>
+          <button class="tablink" title="opens in new tab" onclick="window.open('https://twitter.com/hartyouthfc','_blank')"><i class="fa fa-twitter"></i></button>
+        </div>
+    </td>
     </tr>
   </table>
-
+  <script>
+    window.onscroll = function() {myFunction()};
+    
+    var navbar = document.getElementById("navbar");
+    var sticky = navbar.offsetTop;
+    
+    function myFunction() {
+      if (window.pageYOffset >= sticky) {
+        navbar.classList.add("sticky")
+      } else {
+        navbar.classList.remove("sticky");
+      }
+    }
+    </script>
+    
 <div id="Home" class="tabcontent">
   <h3>Hart Youth FC are here to provide a safe and fun environment for players to enjoy football in the community</h3>
   <h3>Latest images from Hart FC</h3>
