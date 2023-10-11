@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0Z711MDQJV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0Z711MDQJV');
+</script>
 <title>Hart Youth FC</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -8,6 +17,44 @@
 <style>
 * {box-sizing: content-box}
 * {background-color: black}
+
+.accordion {
+  background-color: #000000;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  transition: 0.4s;
+}
+
+.active, .accordion:hover {
+  background-color: #000000;
+}
+
+.accordion:after {
+  content: '\002B';
+  color: #ffffff;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "\2212";
+}
+
+.panel {
+  padding: 0 18px;
+  background-color: black;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+
 #navbar {
   overflow: hidden;
   background-color: #000000;
@@ -117,7 +164,7 @@ body, html {
 .tabcontent {
   color: white;
   display: none;
-  padding: 20px 20px;
+  padding: 10px 10px;
   height: 100%;
 }
 
@@ -145,8 +192,9 @@ table.center {
           <button class="tablink" onclick="openPage('Tournament', this, 'black')">Tourny</button>
           <button class="tablink" title="opens in new tab" onclick="window.open('https://www.surridgesport.com/hart-youth-fc','_blank')">Shop</button>
           <button class="tablink" title="opens in new tab" onclick="window.open('http://www.nehyl.org.uk/','_blank')">NEHYL</button>
-          <button class="tablink" title="opens in new tab" onclick="window.open('https://www.facebook.com/hartyouthfc/','_blank')"><i class="fa fa-facebook"></button>
+          <button class="tablink" title="opens in new tab" onclick="window.open('https://www.facebook.com/hartyouthfc/','_blank')"><i class="fa fa-facebook"></i></button>
           <button class="tablink" title="opens in new tab" onclick="window.open('https://twitter.com/hartyouthfc','_blank')"><i class="fa fa-twitter"></i></button>
+          <button class="tablink" title="opens in new tab" onclick="window.open('https://fulltime.thefa.com/fixtures.html?selectedSeason=19010414&amp;selectedClub=745298120&amp;selectedFixtureGroupKey=','_blank')"><img src="https://fulltime.thefa.com/client/images/cs/fa-logo-table-footer.png" alt="FA Full Time Home" width="18" height="25" border="0" target="_top"></button>
         </div>
     </td>
     </tr>
@@ -234,32 +282,65 @@ table.center {
 </div>
 
 <div id="Matches" class="tabcontent">
-  <p>List of upcoming Hart Youth FC fixtures</p> 
-  <div id="lrep703465248" style="width: 400px;">Data loading....<a href="null">click here for null</a><br/><br/><a href="http://www.thefa.com/FULL-TIME">FULL-TIME Home</a></div>
+  <p>List of upcoming Hart Youth FC <a style="text-align:center; color:#ffffff !important; " href="https://fulltime.thefa.com/fixtures.html?selectedSeason=19010414&amp;selectedClub=745298120&amp;selectedFixtureGroupKey=" target="_top">League</a>
+    fixtures</p> 
+  <div id="lrep34483921" style="width: 350px;">Data loading....<a href="null">click here for null</a><br/><br/><a href="http://www.thefa.com/FULL-TIME">FULL-TIME Home</a></div>
   <script language="javascript" type="text/javascript">
-  var lrcode = '703465248'
+  var lrcode = '34483921'
   </script>
-  <script language="Javascript" type="text/javascript" src="https://fulltime.thefa.com/client/api/cs1.js"></script>
-</div>
+  <script language="Javascript" type="text/javascript" src="https://fulltime.thefa.com/client/api/cs1.js"></script> </div>
 
 <div id="Teams" class="tabcontent">
   <p>We have Boys and Girls teams across the age groups and welcome new members.  We also have adult football and new links to a Womens Walking football team.</p>
   <p>Please use the Contact Menu option to get in touch with us if you have an enquiry.</p>
-  <h3>U6 Development Squad</h3>
+  <button class="accordion">U6 Development Squad</button>
+<div class="panel">
   <p>At Hart FC our aim within the U6’s is to create a friendly, safe and fun environment for the children to enjoy training sessions focusing on the FUNdamentals of football and Agility, Balance and coordination.</p>
   <p>Players train each week until they reach year 2 at school, when they will then have the opportunity to join a league with their Hart FC team mates.</p>
   <p>We welcome new players and train weekly on a Saturday between 2-3pm at Ancells Farm Park playing fields. (September through until May) – We realise children this age could potentially be trying football for the first time and for this reason the first 2 taster sessions are free of charge before you decide whether to register and sign up your child into Hart Youth FC.</p>
-  <h3>U7 & U8 Girls Teams</h3>
+</div>
+
+<button class="accordion">U7 & U8 Girls Teams</button>
+<div class="panel">
   <p>We have started this season with two U7 & U8 Girls teams who train and play together on Friday evening indoors and play matches in the NEHYL on Sunday mornings.</p>
-  <h3>U7 - U18 Mixed Teams</h3>
+</div>
+
+<button class="accordion">U7 - U18 Mixed Teams</button>
+<div class="panel">
   <p>We have various mixed teams through the age groups who train Tuesdays and Wednesdays and play in NEHYL on Saturday mornings. If you would like to learn more then please get in touch.</p>
-  <h3>Adult Friday Night Mixed Football - FNF@hartyouthfc.uk</h3>
-  <h3>Womens Walking Football - coming soon</h3>
+</div>
+
+<button class="accordion">Adult Friday Night Mixed Football</button>
+<div class="panel">
+  <p>Club Parents, Coaches and players over 18 play a friendly 6 a-side game on Fridays, if interested get in touch - FNF@hartyouthfc.uk</p>
+</div>
+
+  <button class="accordion">Womens Walking Football</button>
+  <div class="panel">
+    <p>Coming soon.</p>
+  </div>
+
+  <script>
+    var acc = document.getElementsByClassName("accordion");
+    var i;
+    
+    for (i = 0; i < acc.length; i++) {
+      acc[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var panel = this.nextElementSibling;
+        if (panel.style.maxHeight) {
+          panel.style.maxHeight = null;
+        } else {
+          panel.style.maxHeight = panel.scrollHeight + "px";
+        } 
+      });
+    }
+    </script>
 </div>
 
 <div id="Contact" class="tabcontent">
   <p>Feel free to email us here <a href="mailto:information@hartyouthfc.uk"><i class="fa fa-envelope" style="font-size:20px;color:red"></i></a> or use the form below.</p>
-  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfw0SVpYOiT3iUx9OqR8-8KpSYcGLl9J1djHbbb97OIQuvxfQ/viewform?embedded=true" width="500" height="1900" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfw0SVpYOiT3iUx9OqR8-8KpSYcGLl9J1djHbbb97OIQuvxfQ/viewform?embedded=true" width="500" height="1950" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
 </div>
 
 <div id="Tournament" class="tabcontent">
