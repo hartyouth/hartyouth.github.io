@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Drag and Drop Example</title>
+    <style>
+        .draggable {
+            width: 60px;              /* Smaller width */
+            height: 60px;             /* Smaller height */
+            background: #4CAF50;
+            color: white;
+            text-align: center;
+            line-height: 60px;        /* Match new height */
+            margin-bottom: 10px;
+            cursor: move;
+            margin-right: 10px;
+            display: inline-block;
+        }
+        .dropzone {
+            width: 240px;
+            height: 180px;
+            border: 2px dashed #333;
+            color: #333;
+            margin-top: 20px;
+            margin-right: 10px;
+            display: inline-block;
+            position: relative;
+            text-align: left;
+            vertical-align: top;
+            padding-top: 40px; /* Space for label */
+        }
+        .dropzone-label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: #eee;
+            color: #333;
+            font-weight: bold;
+            line-height: 40px;
+            border-bottom: 1px solid #333;
+            text-align: center;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .dropzone-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 10px;
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex; align-items: flex-start;">
+        <div style="flex: 1;">
+            <div id="fixtures" class="dropzone" style="display:block; margin-bottom:20px; width:520px;">
+                <div class="dropzone-label">fixtures</div>
+                <div id="drag1" class="draggable" draggable="true">Drag me 1</div>
+                <div id="drag2" class="draggable" draggable="true">Drag me 2</div>
+                <div id="drag3" class="draggable" draggable="true">Drag me 3</div>
+                <div id="drag4" class="draggable" draggable="true">Drag me 4</div>
+            </div>
+            <div class="dropzone-grid">
+                <div id="dropzone1" class="dropzone">
+                    <div class="dropzone-label">zebon</div>
+                </div>
+                <div id="dropzone2" class="dropzone">
+                    <div class="dropzone-label">ancells</div>
+                </div>
+                <div id="dropzone3" class="dropzone">
+                    <div class="dropzone-label">cambridge</div>
+                </div>
+                <div id="dropzone4" class="dropzone">
+                    <div class="dropzone-label">alderwood</div>
+                </div>
+                <div id="dropzone5" class="dropzone">
+                    <div class="dropzone-label">basingbourne</div>
+                </div>
+                <div id="dropzone6" class="dropzone">
+                    <div class="dropzone-label">frogmore</div>
+                </div>
+            </div>
+        </div>
+        <div style="flex: none; margin-left: 40px;">
+            <div id="lrep277946729" style="width: 700px;">
+                Data loading....
+                <a href="null">click here for null</a>
+                <br/><br/>
+                <a href="http://www.thefa.com/FULL-TIME">FULL-TIME Home</a>
+            </div>
+            <script language="javascript" type="text/javascript">
+                var lrcode = '277946729'
+            </script>
+            <script language="Javascript" type="text/javascript" src="https://fulltime.thefa.com/client/api/cs1.js"></script>
+        </div>
+    </div>
+
+    <script>
+        const draggableItems = document.querySelectorAll('.draggable');
+        const dropZones = document.querySelectorAll('.dropzone');
+
+        draggableItems.forEach(item => {
+            item.addEventListener('dragstart', function(e) {
+                e.dataTransfer.setData('text/plain', e.target.id);
+            });
+        });
+
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+            });
+
+            zone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                const data = e.dataTransfer.getData('text/plain');
+                const draggedElement = document.getElementById(data);
+                zone.appendChild(draggedElement);
+            });
+        });
+    </script>
+</body>
+</html>
