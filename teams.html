@@ -1,0 +1,39 @@
+<p>We have Boys and Girls teams across the age groups and welcome new members. We also have adult football and new links to a Womens Walking football team.</p>
+<p>Please use the Contact Menu option to get in touch with us if you have an enquiry.</p>
+<button class="accordion">U6 Development Squad</button>
+<div class="panel">
+  <p>At Hart FC our aim within the U6’s is to create a friendly, safe and fun environment for the children to enjoy training sessions focusing on the FUNdamentals of football and Agility, Balance and coordination.</p>
+  <p>Players train each week until they reach year 2 at school, when they will then have the opportunity to join a league with their Hart FC team mates.</p>
+  <p>We welcome new players and train weekly on a Saturday between 2-3pm at Ancells Farm Park playing fields. (September through until May) – We realise children this age could potentially be trying football for the first time and for this reason the first 2 taster sessions are free of charge before you decide whether to register and sign up your child into Hart Youth FC.</p>
+</div>
+<button class="accordion">U7 & U8 Girls Teams</button>
+<div class="panel">
+  <p>We have started this season with two U7 & U8 Girls teams who train and play together on Friday evening indoors and play matches in the NEHYL on Sunday mornings.</p>
+</div>
+<button class="accordion">U7 - U18 Mixed Teams</button>
+<div class="panel">
+  <p>We have various mixed teams through the age groups who train Tuesdays and Wednesdays and play in NEHYL on Saturday mornings. If you would like to learn more then please get in touch.</p>
+</div>
+<button class="accordion">Adult Friday Night Mixed Football</button>
+<div class="panel">
+  <p>Club Parents, Coaches and players over 18 play a friendly 6 a-side game on Fridays, if interested get in touch - FNF@hartyouthfc.uk</p>
+</div>
+<button class="accordion">Womens Walking Football</button>
+<div class="panel">
+  <p>Coming soon.</p>
+</div>
+<script>
+  var acc = document.getElementsByClassName("accordion");
+  var i;
+  for (i = 0; i < acc.length; i++) {
+    acc[i].addEventListener("click", function() {
+      this.classList.toggle("active");
+      var panel = this.nextElementSibling;
+      if (panel.style.maxHeight) {
+        panel.style.maxHeight = null;
+      } else {
+        panel.style.maxHeight = panel.scrollHeight + "px";
+      }
+    });
+  }
+</script>

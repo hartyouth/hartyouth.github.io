@@ -1,383 +1,158 @@
 <!DOCTYPE html>
 <html>
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-0Z711MDQJV"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0Z711MDQJV');
-</script> 
-<title>Hart Youth FC</title>
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-* {box-sizing: content-box}
-* {background-color: black}
-
-.accordion {
-  background-color: #000000;
-  color: #ffffff;
-  cursor: pointer;
-  padding: 18px;
-  width: 100%;
-  border: none;
-  text-align: left;
-  outline: none;
-  font-size: 15px;
-  transition: 0.4s;
-}
-
-.active, .accordion:hover {
-  background-color: #000000;
-}
-
-.accordion:after {
-  content: '\002B';
-  color: #ffffff;
-  font-weight: bold;
-  float: right;
-  margin-left: 5px;
-}
-
-.active:after {
-  content: "\2212";
-}
-
-.panel {
-  padding: 0 18px;
-  background-color: black;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.2s ease-out;
-}
-
-#navbar {
-  overflow: hidden;
-  background-color: #000000;
-}
-
-#navbar a {
-  float: left;
-  display: block;
-  color: #f2f2f2;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-  font-size: 16px;
-}
-
-#navbar a:hover {
-  background-color: #ddd;
-  color: black;
-}
-
-.content {
-  padding: 16px;
-}
-
-.sticky {
-  position: fixed !important;
-  top: 0;
-  width: 100%;
-}
-
-.sticky + .content {
-  padding-top: 0px;
-}
-
-div.gallery {
-  border: 0px solid #000000;
-}
-
-div.gallery:hover {
-  border: 0px solid #000000;
-}
-
-div.gallery img {
-  width: 100%;
-  height: auto;
-}
-
-div.desc {
-  padding: 0px;
-  text-align: center;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-.responsive {
-  padding: 0 6px;
-  float: left;
-  width: 24.99999%;
-}
-
-@media only screen and (max-width: 700px) {
-  .responsive {
-    width: 49.99999%;
-    margin: 6px 0;
-  }
-}
-
-@media only screen and (max-width: 500px) {
-  .responsive {
-    width: 100%;
-  }
-}
-
-.clearfix:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-/* Set height of body and the document to 100% */
-body, html {
-  height: 100%;
-  margin: 0;
-  font-family: Arial;
-}
-
-/* Style tab links */
-.tablink {
-  background-color: #000000;
-  color: white;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 8px 6px;
-  font-size: 16px;
-}
-
-.tablink:hover {
-  background-color: #000000;
-  opacity: 0.7;
-}
-
-/* Style the tab content (and add height:100% for full page content) */
-.tabcontent {
-  color: white;
-  display: none;
-  padding: 40px 40px;
-  height: 100%;
-}
-
-table.center {
-  margin-left: auto; 
-  margin-right: auto;
-}
-
-#Home {background-color: black;}
-#Matches {background-color: black;}
-#Tournament {background-color: black;}
-#Teams {background-color: black;}
-#Contact {background-color: black;}
-</style>
+    <title>Hart Youth FC</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0Z711MDQJV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-0Z711MDQJV');
+    </script>
+    <style>
+        html {
+            font-size: 2vw;
+        }
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: black;
+            color: white;
+        }
+        .tablink {
+            background-color: #000;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 0.5em 0.4em;
+            font-size: 1em;
+        }
+        .tablink:hover {
+            background-color: #000;
+            opacity: 0.7;
+        }
+        #navbar {
+            background: #000;
+            display: flex;
+            justify-content: flex-start; /* Left align navbar */
+            align-items: center;
+            flex-wrap: wrap;
+            min-height: 3em;
+            width: 100vw;
+            box-sizing: border-box;
+        }
+        #navbar .tablink, #navbar .dropdown {
+            float: none;
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 0.2em;
+        }
+        #tab-container {
+            min-height: 20em;
+            background: black;
+            color: white;
+            padding: 2em;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .dropdown {
+            display: inline-block;
+            position: relative;
+        }
+        .dropbtn {
+            background-color: #000;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 0.5em 0.4em;
+            font-size: 1em;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #222;
+            min-width: 8em;
+            z-index: 1;
+        }
+        .dropdown-content a {
+            color: white;
+            padding: 0.75em 1em;
+            text-decoration: none;
+            display: block;
+            font-size: 0.9em;
+        }
+        .dropdown-content a:hover {
+            background-color: #444;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown:hover .dropbtn {
+            background-color: #222;
+        }
+        img, iframe {
+            max-width: 100%;
+            height: auto;
+        }
+        @media (max-width: 700px) {
+            html { font-size: 3vw; }
+            #tab-container { padding: 1em; }
+            #navbar { min-height: 2em; }
+        }
+        @media (max-width: 500px) {
+            html { font-size: 4vw; }
+            #tab-container { padding: 0.5em; }
+            #navbar { flex-direction: column; }
+        }
+    </style>
 </head>
 <body>
-  <table>
-    <tr>
-      <td>
-        <div id="navbar">
-          <button class="tablink" onclick="openPage('Home', this, 'black')" id="defaultOpen"><img src="hartimage.png" alt="hartImage"></button>
-          <button class="tablink" onclick="openPage('Matches', this, 'black')">Matches</button>
-          <button class="tablink" onclick="openPage('Teams', this, 'black')">Teams</button>
-          <button class="tablink" onclick="openPage('Contact', this, 'black')">Contact</button>
-          <button class="tablink" onclick="openPage('Tournament', this, 'black')">Tourny</button>
-          <button class="tablink" title="opens in new tab" onclick="window.open('https://hart-youth-fc.pendlesportswear.co.uk/replica-products/football-training-wear/','_blank')">Shop</button>
-          <button class="tablink" title="opens in new tab" onclick="window.open('http://www.nehyl.org.uk/','_blank')">NEHYL</button>
-          <button class="tablink" title="opens in new tab" onclick="window.open('https://www.facebook.com/hartyouthfc/','_blank')"><i class="fa fa-facebook"></i></button>
-          <button class="tablink" title="opens in new tab" onclick="window.open('https://twitter.com/hartyouthfc','_blank')"><i class="fa fa-twitter"></i></button>
-          <button class="tablink" title="opens in new tab" onclick="window.open('https://fulltime.thefa.com/fixtures.html?selectedSeason=19010414&amp;selectedClub=745298120&amp;selectedFixtureGroupKey=','_blank')"><img src="https://fulltime.thefa.com/client/images/cs/fa-logo-table-footer.png" alt="FA Full Time Home" width="18" height="25" border="0" target="_top"></button>
+    <div style="display: flex;">
+        <div style="flex: 1;">
+            <div id="navbar" style="position:relative;">
+                <button class="tablink" onclick="loadTab('home.html', this)" id="defaultOpen"><img src="hartimage.png" alt="hartImage" style="height:2em;"></button>
+                <button class="tablink" onclick="loadTab('matches.html', this)">Matches</button>
+                <button class="tablink" onclick="loadTab('teams.html', this)">Teams</button>
+                <button class="tablink" onclick="loadTab('contact.html', this)">Contact</button>
+                <button class="tablink" onclick="loadTab('tournament.html', this)">Tourny</button>
+                <div class="dropdown">
+                    <button class="tablink dropbtn">Shop <i class='fa fa-angle-down'></i></button>
+                    <div class="dropdown-content">
+                        <a href="https://hart-youth-fc.pendlesportswear.co.uk/replica-products/football-training-wear/" target="_blank">Pendle</a>
+                        <a href="https://www.karuta-sportswear.com/collections/hart-fc" target="_blank">Karuta</a>
+                        <a href="https://www.ls4teamwear.com/hart-fc" target="_blank">L4</a>
+                    </div>
+                </div>
+                <button class="tablink" title="opens in new tab" onclick="window.open('http://www.nehyl.org.uk/','_blank')">NEHYL</button>
+                <button class="tablink" title="opens in new tab" onclick="window.open('https://www.facebook.com/hartyouthfc/','_blank')"><i class="fa fa-facebook"></i></button>
+                <button class="tablink" title="opens in new tab" onclick="window.open('https://twitter.com/hartyouthfc','_blank')"><i class="fa fa-twitter"></i></button>
+                <button class="tablink" title="opens in new tab" onclick="window.open('https://fulltime.thefa.com/fixtures.html?selectedSeason=19010414&amp;selectedClub=745298120&amp;selectedFixtureGroupKey=','_blank')"><img src="https://fulltime.thefa.com/client/images/cs/fa-logo-table-footer.png" alt="FA Full Time Home" style="height:1.2em;" border="0" target="_top"></button>
+            </div>
+            <div style="width: 100%; display: flex; justify-content: center; align-items: center; margin: 1em 0;">
+                <img src="GRC_hotizontal.gif" alt="GRC Horizontal" style="max-width: 80vw; height: auto;">
+            </div>
+            <div id="tab-container"></div>
         </div>
-    </td>
-    </tr>
-  </table>
-  <!--script>
-    window.onscroll = function() {myFunction()};
-    
-    var navbar = document.getElementById("navbar");
-    var sticky = navbar.offsetTop;
-    
-    function myFunction() {
-      if (window.pageYOffset >= sticky) {
-        navbar.classList.add("sticky")
-      } else {
-        navbar.classList.remove("sticky");
-      }
-    }
-    </script-->
-     
-<div id="Home" class="tabcontent">
-  <h3>Hart Youth FC are here to provide a safe and fun environment for players to enjoy football in the community</h3>
-  <h3>Latest images from Hart FC</h3>
-  <div class="responsive">
-    <div class="gallery">
-        <img src="HART_FC_1080X1080_GIRLS_CAN.jpg" alt="Forest" width="600" height="400">
     </div>
-  </div>
-  
-  <div class="responsive">
-    <div class="gallery">
-        <img src="HART_FC_SOCIAL.jpg" alt="Northern Lights" width="600" height="400">
-    </div>
-  </div>
-
-  <div class="responsive">
-    <div class="gallery">
-        <img src="HartU12sTrophyNight.jpg" alt="Northern Lights" width="600" height="400">
-    </div>
-  </div>
-  
-  <div class="responsive">
-    <div class="gallery">
-        <img src="HART_FC_SOCIAL2.jpg" alt="Mountains" width="600" height="400">
-    </div>
-  </div>
-
-  <div class="responsive">
-    <div class="gallery">
-        <img src="Exec.jpg" alt="Cinque Terre" width="600" height="400">
-    </div>
-  </div>
-  
-  <div class="clearfix"></div>
-  <h3>Our Wonderful Sponsors</h3>
-  <div class="responsive">
-    <div class="gallery">
-        <img src="creativegravy.jpg" alt="creativegravy.jpg">
-    </div>
-  </div>
-  <div class="responsive">
-    <div class="gallery">
-        <img src="eddieshomemaintenance.jpg" alt="eddieshomemaintenance.jpg">
-    </div>
-  </div>
-  <div class="responsive">
-    <div class="gallery">
-        <img src="fleetmortgages_new.png" alt="fleetmortgages_new.png">
-    </div>
-  </div>
-  <div class="responsive">
-    <div class="gallery">
-        <img src="futsal4u.jpg" alt="futsal4u.jpg">
-    </div>
-  </div>
-  <div class="responsive">
-    <div class="gallery">
-        <img src="kalibrekitchens.jpg" alt="kalibrekitchens.jpg">
-    </div>
-  </div>
-  <div class="responsive">
-    <div class="gallery">
-        <img src="laspalmeras.jpg" alt="laspalmeras.jpg">
-    </div>
-  </div>
-  <div class="responsive">
-    <div class="gallery">
-        <img src="rainbowtrust.jpg" alt="rainbowtrust.jpg">
-    </div>
-  </div>
-  <div class="clearfix"></div>
-</div>
-
-<div id="Matches" class="tabcontent">
-    <a class="weatherwidget-io" href="https://forecast7.com/en/51d28n0d84/fleet/" data-label_1="FLEET" data-label_2="WEATHER" data-theme="original" >FLEET WEATHER</a>
-<script>
-!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
-</script>
-  <p>List of upcoming Hart Youth FC <a style="text-align:center; color:#ffffff !important; " href="https://fulltime.thefa.com/fixtures.html?selectedSeason=134443012&selectedFixtureGroupAgeGroup=0&selectedFixtureGroupKey=&selectedDateCode=all&selectedClub=745298120&selectedTeam=&selectedRelatedFixtureOption=2&selectedFixtureDateStatus=&selectedFixtureStatus=&previousSelectedFixtureGroupAgeGroup=&previousSelectedFixtureGroupKey=&previousSelectedClub=745298120&itemsPerPage=100" target="_top">League</a>
-    fixtures</p> 
-  <div id="lrep277946729" style="width: 600px;">Data loading....<a href="null">click here for null</a><br/><br/><a href="http://www.thefa.com/FULL-TIME">FULL-TIME Home</a></div>
-<script language="javascript" type="text/javascript">
-var lrcode = '277946729'
-</script>
-<script language="Javascript" type="text/javascript" src="https://fulltime.thefa.com/client/api/cs1.js"></script> <script language="Javascript" type="text/javascript" src="https://fulltime.thefa.com/client/api/cs1.js"></script> </div>
-
-<div id="Teams" class="tabcontent">
-  <p>We have Boys and Girls teams across the age groups and welcome new members.  We also have adult football and new links to a Womens Walking football team.</p>
-  <p>Please use the Contact Menu option to get in touch with us if you have an enquiry.</p>
-  <button class="accordion">U6 Development Squad</button>
-<div class="panel">
-  <p>At Hart FC our aim within the U6’s is to create a friendly, safe and fun environment for the children to enjoy training sessions focusing on the FUNdamentals of football and Agility, Balance and coordination.</p>
-  <p>Players train each week until they reach year 2 at school, when they will then have the opportunity to join a league with their Hart FC team mates.</p>
-  <p>We welcome new players and train weekly on a Saturday between 2-3pm at Ancells Farm Park playing fields. (September through until May) – We realise children this age could potentially be trying football for the first time and for this reason the first 2 taster sessions are free of charge before you decide whether to register and sign up your child into Hart Youth FC.</p>
-</div>
-
-<button class="accordion">U7 & U8 Girls Teams</button>
-<div class="panel">
-  <p>We have started this season with two U7 & U8 Girls teams who train and play together on Friday evening indoors and play matches in the NEHYL on Sunday mornings.</p>
-</div>
-
-<button class="accordion">U7 - U18 Mixed Teams</button>
-<div class="panel">
-  <p>We have various mixed teams through the age groups who train Tuesdays and Wednesdays and play in NEHYL on Saturday mornings. If you would like to learn more then please get in touch.</p>
-</div>
-
-<button class="accordion">Adult Friday Night Mixed Football</button>
-<div class="panel">
-  <p>Club Parents, Coaches and players over 18 play a friendly 6 a-side game on Fridays, if interested get in touch - FNF@hartyouthfc.uk</p>
-</div>
-
-  <button class="accordion">Womens Walking Football</button>
-  <div class="panel">
-    <p>Coming soon.</p>
-  </div>
-
-  <script>
-    var acc = document.getElementsByClassName("accordion");
-    var i;
-    
-    for (i = 0; i < acc.length; i++) {
-      acc[i].addEventListener("click", function() {
-        this.classList.toggle("active");
-        var panel = this.nextElementSibling;
-        if (panel.style.maxHeight) {
-          panel.style.maxHeight = null;
-        } else {
-          panel.style.maxHeight = panel.scrollHeight + "px";
-        } 
-      });
-    }
+    <script>
+        function loadTab(url, elmnt) {
+            var tablinks = document.getElementsByClassName("tablink");
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].style.backgroundColor = "";
+            }
+            if (elmnt) elmnt.style.backgroundColor = "black";
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('tab-container').innerHTML = html;
+                });
+        }
+        document.getElementById("defaultOpen").click();
     </script>
-</div>
-
-<div id="Contact" class="tabcontent">
-  <p>Feel free to email us here <a href="mailto:information@hartyouthfc.uk"><i class="fa fa-envelope" style="font-size:20px;color:red"></i></a> or use the form below.</p>
-  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfw0SVpYOiT3iUx9OqR8-8KpSYcGLl9J1djHbbb97OIQuvxfQ/viewform?embedded=true" width="500" height="1950" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-</div>
-
-<div id="Tournament" class="tabcontent">
-  <h3>Tournament</h3>
-  <h3><img src="HartTourney.jpg" alt="HartTourney"></h3>
-  <p>The first ever Hart Youth FC tournament coming soon!</p>
-  <p>tournament@hartyouthfc.uk</p>
-</div>
-
-<script>
-function openPage(pageName,elmnt,color) {
-  var i, tabcontent, tablinks;
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-  tablinks = document.getElementsByClassName("tablink");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].style.backgroundColor = "";
-  }
-  document.getElementById(pageName).style.display = "block";
-  elmnt.style.backgroundColor = color;
-}
-
-// Get the element with id="defaultOpen" and click on it
-document.getElementById("defaultOpen").click();
-</script>
-   
 </body>
-</html> 
+</html>
