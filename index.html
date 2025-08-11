@@ -27,10 +27,11 @@
         .tablink {
             background-color: #000;
             color: white;
+            float: left;
             border: none;
             cursor: pointer;
-            padding: 0.5em 0.4em;
-            font-size: 1em;
+            padding: 8px 6px;
+            font-size: 16px;
         }
         .tablink:hover {
             background-color: #000;
@@ -38,13 +39,11 @@
         }
         #navbar {
             background: #000;
-            display: flex;
-            justify-content: flex-start; /* Left align navbar */
+            float: left;
+            display: block;
             align-items: center;
-            flex-wrap: wrap;
-            min-height: 3em;
-            width: 100vw;
-            box-sizing: border-box;
+            padding 14px 16px;
+            font-size: 16px;
         }
         #navbar .tablink, #navbar .dropdown {
             float: none;
@@ -114,7 +113,7 @@
 <body>
     <div style="display: flex;">
         <div style="flex: 1;">
-            <div id="navbar" style="position:relative;">
+            <div id="navbar">
                 <button class="tablink" onclick="loadTab('home.html', this)" id="defaultOpen"><img src="hartimage.png" alt="hartImage" style="height:2em;"></button>
                 <button class="tablink" onclick="loadTab('matches.html', this)">Matches</button>
                 <button class="tablink" onclick="loadTab('teams.html', this)">Teams</button>
