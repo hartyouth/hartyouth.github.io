@@ -41,15 +41,12 @@
             background: #000;
             float: left;
             display: block;
-            align-items: center;
             padding 14px 16px;
             font-size: 16px;
         }
         #navbar .tablink, #navbar .dropdown {
             float: none;
-            display: inline-block;
-            vertical-align: middle;
-            margin: 0 0.2em;
+            vertical-align: top;
         }
         #tab-container {
             min-height: 20em;
@@ -101,43 +98,43 @@
         @media (max-width: 700px) {
             html { font-size: 3vw; }
             #tab-container { padding: 1em; }
-            #navbar { min-height: 2em; }
         }
         @media (max-width: 500px) {
             html { font-size: 4vw; }
             #tab-container { padding: 0.5em; }
-            #navbar { flex-direction: column; }
         }
     </style>
 </head>
 <body>
-    <div style="display: flex;">
-        <div style="flex: 1;">
-            <div id="navbar">
-                <button class="tablink" onclick="loadTab('home.html', this)" id="defaultOpen"><img src="hartimage.png" alt="hartImage" style="height:2em;"></button>
-                <button class="tablink" onclick="loadTab('matches.html', this)">Matches</button>
-                <button class="tablink" onclick="loadTab('teams.html', this)">Teams</button>
-                <button class="tablink" onclick="loadTab('contact.html', this)">Contact</button>
-                <button class="tablink" onclick="loadTab('tournament.html', this)">Tourny</button>
-                <div class="dropdown">
-                    <button class="tablink dropbtn">Shop <i class='fa fa-angle-down'></i></button>
-                    <div class="dropdown-content">
-                        <a href="https://hart-youth-fc.pendlesportswear.co.uk/replica-products/football-training-wear/" target="_blank">Pendle</a>
-                        <a href="https://www.karuta-sportswear.com/collections/hart-fc" target="_blank">Karuta</a>
-                        <a href="https://www.ls4teamwear.com/hart-fc" target="_blank">L4</a>
-                    </div>
-                </div>
-                <button class="tablink" title="opens in new tab" onclick="window.open('http://www.nehyl.org.uk/','_blank')">NEHYL</button>
-                <button class="tablink" title="opens in new tab" onclick="window.open('https://www.facebook.com/hartyouthfc/','_blank')"><i class="fa fa-facebook"></i></button>
-                <button class="tablink" title="opens in new tab" onclick="window.open('https://twitter.com/hartyouthfc','_blank')"><i class="fa fa-twitter"></i></button>
-                <button class="tablink" title="opens in new tab" onclick="window.open('https://fulltime.thefa.com/fixtures.html?selectedSeason=19010414&amp;selectedClub=745298120&amp;selectedFixtureGroupKey=','_blank')"><img src="https://fulltime.thefa.com/client/images/cs/fa-logo-table-footer.png" alt="FA Full Time Home" style="height:1.2em;" border="0" target="_top"></button>
-            </div>
-            <div style="width: 100%; display: flex; justify-content: center; align-items: center; margin: 1em 0;">
-                <img src="GRC_hotizontal.gif" alt="GRC Horizontal" style="max-width: 80vw; height: auto;">
-            </div>
-            <div id="tab-container"></div>
-        </div>
-    </div>
+  <table>
+    <tr>
+      <td>
+              <div id="navbar">
+                  <button class="tablink" onclick="loadTab('home.html', this)" id="defaultOpen"><img src="hartimage.png" alt="hartImage"></button>
+                  <button class="tablink" onclick="loadTab('matches.html', this)">Matches</button>
+                  <button class="tablink" onclick="loadTab('teams.html', this)">Teams</button>
+                  <button class="tablink" onclick="loadTab('contact.html', this)">Contact</button>
+                  <button class="tablink" onclick="loadTab('tournament.html', this)">Tourny</button>
+                  <div class="dropdown">
+                      <button class="tablink dropbtn">Shop <i class='fa fa-angle-down'></i></button>
+                      <div class="dropdown-content">
+                          <a href="https://hart-youth-fc.pendlesportswear.co.uk/replica-products/football-training-wear/" target="_blank">Pendle</a>
+                          <a href="https://www.karuta-sportswear.com/collections/hart-fc" target="_blank">Karuta</a>
+                          <a href="https://www.ls4teamwear.com/hart-fc" target="_blank">L4</a>
+                      </div>
+                  </div>
+                  <button class="tablink" title="opens in new tab" onclick="window.open('http://www.nehyl.org.uk/','_blank')">NEHYL</button>
+                  <button class="tablink" title="opens in new tab" onclick="window.open('https://www.facebook.com/hartyouthfc/','_blank')"><i class="fa fa-facebook"></i></button>
+                  <button class="tablink" title="opens in new tab" onclick="window.open('https://twitter.com/hartyouthfc','_blank')"><i class="fa fa-twitter"></i></button>
+                  <button class="tablink" title="opens in new tab" onclick="window.open('https://fulltime.thefa.com/fixtures.html?selectedSeason=19010414&amp;selectedClub=745298120&amp;selectedFixtureGroupKey=','_blank')"><img src="https://fulltime.thefa.com/client/images/cs/fa-logo-table-footer.png" alt="FA Full Time Home" style="height:1.2em;" border="0" target="_top"></button>
+              </div>
+              <div style="width: 100%; display: flex; justify-content: center; align-items: center; margin: 1em 0;">
+                  <img src="GRC_hotizontal.gif" alt="GRC Horizontal" style="max-width: 80vw; height: auto;">
+              </div>
+              <div id="tab-container"></div>
+      </td>
+    </tr>
+  </table>
     <script>
         function loadTab(url, elmnt) {
             var tablinks = document.getElementsByClassName("tablink");
