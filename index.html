@@ -112,7 +112,14 @@
               <div id="navbar">
                   <button class="tablink" onclick="loadTab('home.html', this)" id="defaultOpen"><img src="hartimage.png" alt="hartImage"></button>
                   <button class="tablink" onclick="loadTab('matches.html', this)">Matches</button>
-                  <button class="tablink" onclick="loadTab('teams.html', this)">Teams</button>
+                  <div class="dropdown">
+                      <button class="tablink dropbtn">Teams <i class='fa fa-angle-down'></i></button>
+                      <div class="dropdown-content">
+                          <a href="#" onclick="loadTab('girls.html', this); return false;">Girls</a>
+                          <a href="#" onclick="loadTab('mixed.html', this); return false;">Mixed</a>
+                          <a href="#" onclick="loadTab('adult.html', this); return false;">Adult</a>
+                      </div>
+                  </div>
                   <button class="tablink" onclick="loadTab('contact.html', this)">Contact</button>
                   <button class="tablink" onclick="loadTab('tournament.html', this)">Tourny</button>
                   <div class="dropdown">
