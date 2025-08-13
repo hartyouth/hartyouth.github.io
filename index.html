@@ -25,7 +25,7 @@
             color: white;
         }
         .tablink {
-            background-color: #000;
+            background-color: transparent;
             color: white;
             float: left;
             border: none;
@@ -34,12 +34,16 @@
             font-size: 16px;
         }
         .tablink:hover {
-            background-color: #000;
+            background-color: rgba(0,0,0,0.3);
             opacity: 0.7;
         }
         #navbar {
-            background: #000;
-            float: left;
+            background: transparent;   /* Transparent navbar */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            z-index: 1000;
             display: block;
             padding: 14px 16px;
             font-size: 16px;
@@ -61,7 +65,7 @@
             position: relative;
         }
         .dropbtn {
-            background-color: #000;
+            background-color: transparent;
             color: white;
             border: none;
             cursor: pointer;
@@ -89,7 +93,7 @@
             display: block;
         }
         .dropdown:hover .dropbtn {
-            background-color: #222;
+            background-color: rgba(0,0,0,0.3);
         }
         img, iframe {
             max-width: 100%;
@@ -135,13 +139,13 @@
                   <button class="tablink" title="opens in new tab" onclick="window.open('https://twitter.com/hartyouthfc','_blank')"><i class="fa fa-twitter"></i></button>
                   <button class="tablink" title="opens in new tab" onclick="window.open('https://fulltime.thefa.com/fixtures.html?selectedSeason=19010414&amp;selectedClub=745298120&amp;selectedFixtureGroupKey=','_blank')"><img src="https://fulltime.thefa.com/client/images/cs/fa-logo-table-footer.png" alt="FA Full Time Home" style="height:1.2em;" border="0" target="_top"></button>
               </div>
-              <div style="width: 100%; display: flex; justify-content: center; align-items: center; margin: 1em 0;">
-                  <img src="GRC_hotizontal.gif" alt="GRC Horizontal" style="max-width: 80vw; height: auto;">
-              </div>
-              <div id="tab-container"></div>
       </td>
     </tr>
   </table>
+    <div style="width: 100%; display: flex; justify-content: center; align-items: center; margin: 4em 0 1em 0;">
+        <img src="GRC_hotizontal.gif" alt="GRC Horizontal" style="max-width: 80vw; height: auto;">
+    </div>
+    <div id="tab-container"></div>
     <script>
         function loadTab(url, elmnt) {
             var tablinks = document.getElementsByClassName("tablink");
