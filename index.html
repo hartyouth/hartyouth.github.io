@@ -154,8 +154,10 @@
 <body>
     <div style="position: fixed; top: 0; left: 0; width: 100vw; z-index: 1000; background: transparent;">
         <div style="display: flex; align-items: flex-start; flex-wrap: wrap;">
-            <div style="flex-shrink: 0; padding: 0 4px 0 10px;">
-                <img src="hartimage.png" alt="Hart Youth FC" style="height: 3em; width: auto; cursor:pointer;" onclick="loadTab('home.html', document.getElementById('defaultOpen'));">
+            <div style="flex-shrink: 0; padding: 0 4px 0 10px; display: flex; align-items: center;">
+                <img src="hartimage.png" alt="Hart Youth FC"
+                     style="height: 3.2em; width: auto; cursor:pointer; margin-top: 0.2em;"
+                     onclick="loadTab('home.html', document.getElementById('defaultOpen'));">
             </div>
             <div id="navbar" style="background: transparent; display: flex; align-items: flex-start; flex-wrap: wrap; position: relative; flex: 1;">
                 <div class="navbar-menu">
@@ -207,6 +209,11 @@
                 .then(html => {
                     document.getElementById('tab-container').innerHTML = html;
                 });
+            // Close burger menu if open
+            var navbar = document.getElementById('navbar');
+            if (navbar.classList.contains('menu-open')) {
+                navbar.classList.remove('menu-open');
+            }
         }
         // Show home.html by default
         window.addEventListener('DOMContentLoaded', function() {
