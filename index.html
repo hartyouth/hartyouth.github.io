@@ -103,6 +103,10 @@
             margin-right: 10px;
             position: relative;
             z-index: 101;
+            transition: color 0.2s;
+        }
+        .navbar-burger.cross {
+            color: #ff4444;
         }
         .navbar-menu {
             display: flex;
@@ -194,8 +198,22 @@
     </div>
     <div style="height:3em;"></div> <!-- Reduced spacer for fixed header -->
     <div id="grc-gif-bar" style="width: 100%; display: flex; justify-content: center; align-items: center; margin: 3em 0 1em 0;">
-        <img src="GRC_hotizontal.gif" alt="GRC Horizontal" style="max-width: 80vw; height: auto;">
+        <img id="fa-banner" src="we-only-do-positive.jpg" alt="FA Banner" style="max-width: 80vw; height: auto;">
     </div>
+    <script>
+        // Cycle through FA jpg images every 3 seconds
+        const faImages = [
+            "we-only-do-positive.jpg",
+            "90-of-children-play-better-with-positivity.jpg",
+            "weonlydopositive.jpg"
+        ];
+
+        let faIndex = 0;
+        setInterval(() => {
+            faIndex = (faIndex + 1) % faImages.length;
+            document.getElementById('fa-banner').src = faImages[faIndex];
+        }, 3000);
+    </script>
     <div id="tab-container"></div>
     <script>
         function loadTab(url, elmnt) {
@@ -211,8 +229,13 @@
                 });
             // Close burger menu if open
             var navbar = document.getElementById('navbar');
+            var burger = navbar.querySelector('.navbar-burger');
             if (navbar.classList.contains('menu-open')) {
                 navbar.classList.remove('menu-open');
+                if (burger) {
+                    burger.classList.remove('cross');
+                    burger.innerHTML = "&#9776;";
+                }
             }
         }
         // Show home.html by default
@@ -222,7 +245,15 @@
 
         function toggleMenu() {
             var navbar = document.getElementById('navbar');
+            var burger = navbar.querySelector('.navbar-burger');
             navbar.classList.toggle('menu-open');
+            if (navbar.classList.contains('menu-open')) {
+                burger.classList.add('cross');
+                burger.innerHTML = "&times;";
+            } else {
+                burger.classList.remove('cross');
+                burger.innerHTML = "&#9776;";
+            }
         }
     </script>
 </body>
