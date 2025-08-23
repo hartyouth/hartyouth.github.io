@@ -257,4 +257,25 @@
         }
     </script>
 </body>
+
+<footer id="page-footer" style="width: 100%; margin-top: 2em; padding: 1em 0; background: #222; display: none;">
+    <nav style="display: flex; justify-content: center; gap: 2em; flex-wrap: wrap;">
+        <a href="contact.html" style="color: #fff; text-decoration: none; font-size: 1em;">Contact Us</a>
+        <a href="https://www.nehyl.org.uk/" target="_blank" style="color: #fff; text-decoration: none; font-size: 1em;">NEHYL</a>
+    </nav>
+</footer>
+
+<script>
+window.addEventListener('scroll', function() {
+    var footer = document.getElementById('page-footer');
+    var scrollY = window.scrollY || window.pageYOffset;
+    var windowHeight = window.innerHeight;
+    var bodyHeight = document.body.offsetHeight;
+    if (scrollY + windowHeight >= bodyHeight - 2) {
+        footer.style.display = 'block';
+    } else {
+        footer.style.display = 'none';
+    }
+});
+</script>
 </html>
