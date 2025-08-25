@@ -1,11 +1,15 @@
-<h3 style="text-align:center; color:#1976d2; margin-top:2em;">Hart Youth FC are here to provide a safe and fun environment for players to enjoy football in the community</h3>
+<h3 style="text-align:left; color:#fff; margin-top:2em;">Hart Youth FC are here to provide a safe and fun environment for players to enjoy football in the community</h3>
 
 <div style="max-width:700px; margin:2em auto;">
   <h3 style="text-align:center; color:#222;">Latest images from Hart FC</h3>
   <div id="hartfc-gallery" style="position:relative; width:100%; height:400px; overflow:hidden; border-radius:12px; box-shadow:0 2px 8px rgba(25,118,210,0.08); background:#fff;">
+    <span style="position:absolute; top:16px; left:50%; transform:translateX(-50%); color:#fff; font-size:1.8em; font-weight:bold; text-shadow:0 2px 8px rgba(0,0,0,0.3); z-index:2;">Hart FC Gallery</span>
     <img id="gallery-img" src="HART_FC_1080X1080_GIRLS_CAN.jpg" alt="Hart FC Gallery" style="width:100%; height:100%; object-fit:cover; transition:opacity 0.5s;">
     <button id="gallery-prev" style="position:absolute; top:50%; left:10px; transform:translateY(-50%); background:#1976d2; color:#fff; border:none; border-radius:50%; width:40px; height:40px; font-size:1.5em; cursor:pointer; opacity:0.7;">&#8592;</button>
     <button id="gallery-next" style="position:absolute; top:50%; right:10px; transform:translateY(-50%); background:#1976d2; color:#fff; border:none; border-radius:50%; width:40px; height:40px; font-size:1.5em; cursor:pointer; opacity:0.7;">&#8594;</button>
+    <div id="gallery-thumbnails" style="display:flex; justify-content:center; gap:1em; margin-top:16px; position:absolute; left:0; right:0; bottom:10px; z-index:3;">
+      <!-- Thumbnails will be injected here -->
+    </div>
   </div>
 </div>
 <script>
@@ -20,25 +24,52 @@ let galleryIndex = 0;
 const galleryImg = document.getElementById('gallery-img');
 const prevBtn = document.getElementById('gallery-prev');
 const nextBtn = document.getElementById('gallery-next');
+const thumbnailsDiv = document.getElementById('gallery-thumbnails');
 function showGalleryImg(idx) {
   galleryImg.style.opacity = 0.3;
+  galleryImg.src = galleryImages[idx];
   setTimeout(() => {
-    galleryImg.src = galleryImages[idx];
     galleryImg.style.opacity = 1;
   }, 200);
+  updateThumbnails(idx);
 }
-prevBtn.onclick = function() {
-  galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length;
+function moveGallery(delta) {
+  galleryIndex = (galleryIndex + delta + galleryImages.length) % galleryImages.length;
   showGalleryImg(galleryIndex);
-};
-nextBtn.onclick = function() {
-  galleryIndex = (galleryIndex + 1) % galleryImages.length;
-  showGalleryImg(galleryIndex);
-};
-setInterval(() => {
-  galleryIndex = (galleryIndex + 1) % galleryImages.length;
-  showGalleryImg(galleryIndex);
+  resetGalleryInterval();
+}
+prevBtn.onclick = function() { moveGallery(-1); };
+nextBtn.onclick = function() { moveGallery(1); };
+let galleryInterval = setInterval(() => {
+  moveGallery(1);
 }, 3000);
+function resetGalleryInterval() {
+  clearInterval(galleryInterval);
+  galleryInterval = setInterval(() => {
+    moveGallery(1);
+  }, 3000);
+}
+function updateThumbnails(activeIdx) {
+  thumbnailsDiv.innerHTML = "";
+  galleryImages.forEach((img, idx) => {
+    const thumb = document.createElement('img');
+    thumb.src = img;
+    thumb.style.height = '48px';
+    thumb.style.width = '48px';
+    thumb.style.objectFit = 'cover';
+    thumb.style.borderRadius = '6px';
+    thumb.style.cursor = 'pointer';
+    thumb.style.border = idx === activeIdx ? '3px solid #1976d2' : '2px solid #ccc';
+    thumb.style.opacity = idx === activeIdx ? '1' : '0.6';
+    thumb.onclick = () => {
+      galleryIndex = idx;
+      showGalleryImg(idx);
+      resetGalleryInterval();
+    };
+    thumbnailsDiv.appendChild(thumb);
+  });
+}
+updateThumbnails(galleryIndex);
 </script>
 
 <h3 style="text-align:center; color:#1976d2; margin-top:3em;">Our Wonderful Sponsors</h3>
