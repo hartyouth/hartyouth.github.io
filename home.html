@@ -1,17 +1,53 @@
-<h3>Hart Youth FC are here to provide a safe and fun environment for players to enjoy football in the community</h3>
-<h3>Latest images from Hart FC</h3>
-<div class="responsive"><div class="gallery"><img src="HART_FC_1080X1080_GIRLS_CAN.jpg" alt="Forest"></div></div>
-<div class="responsive"><div class="gallery"><img src="HART_FC_SOCIAL.jpg" alt="Northern Lights"></div></div>
-<div class="responsive"><div class="gallery"><img src="HartU12sTrophyNight.jpg" alt="Northern Lights"></div></div>
-<div class="responsive"><div class="gallery"><img src="HART_FC_SOCIAL2.jpg" alt="Mountains"></div></div>
-<div class="responsive"><div class="gallery"><img src="Exec.jpg" alt="Cinque Terre"></div></div>
-<div class="clearfix"></div>
-<h3>Our Wonderful Sponsors</h3>
-<div class="responsive"><div class="gallery"><img src="creativegravy.jpg" alt="creativegravy.jpg"></div></div>
-<div class="responsive"><div class="gallery"><img src="eddieshomemaintenance.jpg" alt="eddieshomemaintenance.jpg"></div></div>
-<div class="responsive"><div class="gallery"><img src="fleetmortgages_new.png" alt="fleetmortgages_new.png"></div></div>
-<div class="responsive"><div class="gallery"><img src="futsal4u.jpg" alt="futsal4u.jpg"></div></div>
-<div class="responsive"><div class="gallery"><img src="kalibrekitchens.jpg" alt="kalibrekitchens.jpg"></div></div>
-<div class="responsive"><div class="gallery"><img src="laspalmeras.jpg" alt="laspalmeras.jpg"></div></div>
-<div class="responsive"><div class="gallery"><img src="rainbowtrust.jpg" alt="rainbowtrust.jpg"></div></div>
-<div class="clearfix"></div>
+<h3 style="text-align:center; color:#1976d2; margin-top:2em;">Hart Youth FC are here to provide a safe and fun environment for players to enjoy football in the community</h3>
+
+<div style="max-width:700px; margin:2em auto;">
+  <h3 style="text-align:center; color:#222;">Latest images from Hart FC</h3>
+  <div id="hartfc-gallery" style="position:relative; width:100%; height:400px; overflow:hidden; border-radius:12px; box-shadow:0 2px 8px rgba(25,118,210,0.08); background:#fff;">
+    <img id="gallery-img" src="HART_FC_1080X1080_GIRLS_CAN.jpg" alt="Hart FC Gallery" style="width:100%; height:100%; object-fit:cover; transition:opacity 0.5s;">
+    <button id="gallery-prev" style="position:absolute; top:50%; left:10px; transform:translateY(-50%); background:#1976d2; color:#fff; border:none; border-radius:50%; width:40px; height:40px; font-size:1.5em; cursor:pointer; opacity:0.7;">&#8592;</button>
+    <button id="gallery-next" style="position:absolute; top:50%; right:10px; transform:translateY(-50%); background:#1976d2; color:#fff; border:none; border-radius:50%; width:40px; height:40px; font-size:1.5em; cursor:pointer; opacity:0.7;">&#8594;</button>
+  </div>
+</div>
+<script>
+const galleryImages = [
+  "HART_FC_1080X1080_GIRLS_CAN.jpg",
+  "HART_FC_SOCIAL.jpg",
+  "HartU12sTrophyNight.jpg",
+  "HART_FC_SOCIAL2.jpg",
+  "Exec.jpg"
+];
+let galleryIndex = 0;
+const galleryImg = document.getElementById('gallery-img');
+const prevBtn = document.getElementById('gallery-prev');
+const nextBtn = document.getElementById('gallery-next');
+function showGalleryImg(idx) {
+  galleryImg.style.opacity = 0.3;
+  setTimeout(() => {
+    galleryImg.src = galleryImages[idx];
+    galleryImg.style.opacity = 1;
+  }, 200);
+}
+prevBtn.onclick = function() {
+  galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length;
+  showGalleryImg(galleryIndex);
+};
+nextBtn.onclick = function() {
+  galleryIndex = (galleryIndex + 1) % galleryImages.length;
+  showGalleryImg(galleryIndex);
+};
+setInterval(() => {
+  galleryIndex = (galleryIndex + 1) % galleryImages.length;
+  showGalleryImg(galleryIndex);
+}, 3000);
+</script>
+
+<h3 style="text-align:center; color:#1976d2; margin-top:3em;">Our Wonderful Sponsors</h3>
+<div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1em; margin-bottom:2em;">
+  <div class="gallery"><img src="creativegravy.jpg" alt="creativegravy.jpg" style="height:100px; border-radius:8px;"></div>
+  <div class="gallery"><img src="eddieshomemaintenance.jpg" alt="eddieshomemaintenance.jpg" style="height:100px; border-radius:8px;"></div>
+  <div class="gallery"><img src="fleetmortgages_new.png" alt="fleetmortgages_new.png" style="height:100px; border-radius:8px;"></div>
+  <div class="gallery"><img src="futsal4u.jpg" alt="futsal4u.jpg" style="height:100px; border-radius:8px;"></div>
+  <div class="gallery"><img src="kalibrekitchens.jpg" alt="kalibrekitchens.jpg" style="height:100px; border-radius:8px;"></div>
+  <div class="gallery"><img src="laspalmeras.jpg" alt="laspalmeras.jpg" style="height:100px; border-radius:8px;"></div>
+  <div class="gallery"><img src="rainbowtrust.jpg" alt="rainbowtrust.jpg" style="height:100px; border-radius:8px;"></div>
+</div>
