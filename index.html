@@ -263,18 +263,20 @@
                 .then(html => {
                     const container = document.getElementById('tab-container');
                     container.innerHTML = html;
-                    // Execute scripts in loaded HTML
-                    const scripts = container.querySelectorAll('script');
-                    scripts.forEach(oldScript => {
-                        const newScript = document.createElement('script');
-                        if (oldScript.src) {
-                            newScript.src = oldScript.src;
-                        } else {
-                            newScript.textContent = oldScript.textContent;
-                        }
-                        oldScript.parentNode.removeChild(oldScript);
-                        container.appendChild(newScript);
-                    });
+                    // Execute scripts in loaded HTML after DOM update
+                    setTimeout(() => {
+                        const scripts = container.querySelectorAll('script');
+                        scripts.forEach(oldScript => {
+                            const newScript = document.createElement('script');
+                            if (oldScript.src) {
+                                newScript.src = oldScript.src;
+                            } else {
+                                newScript.textContent = oldScript.textContent;
+                            }
+                            oldScript.parentNode.removeChild(oldScript);
+                            container.appendChild(newScript);
+                        });
+                    }, 0);
                 });
             // Close burger menu if open
             var navbar = document.getElementById('navbar');
@@ -308,9 +310,17 @@
 </body>
 
 <footer id="page-footer" style="width: 100%; margin-top: 2em; padding: 1em 0; background: #222; display: none;">
-    <nav style="display: flex; justify-content: center; gap: 2em; flex-wrap: wrap;">
+    <nav style="display: flex; justify-content: center; gap: 2em; flex-wrap: wrap; align-items: center;">
         <a href="contact.html" style="color: #fff; text-decoration: none; font-size: 1em;">Contact Us</a>
         <a href="https://www.nehyl.org.uk/" target="_blank" style="color: #fff; text-decoration: none; font-size: 1em;">NEHYL</a>
+        <button class="tablink" title="opens in new tab" onclick="window.open('https://www.facebook.com/hartyouthfc/','_blank')" style="background: none; border: none; color: #fff; font-size: 1.3em; cursor: pointer;"><i class="fa fa-facebook"></i></button>
+        <button class="tablink" title="opens in new tab" onclick="window.open('https://twitter.com/hartyouthfc','_blank')" style="background: none; border: none; color: #fff; font-size: 1.3em; cursor: pointer;"><i class="fa fa-twitter"></i></button>
+        <button class="tablink" title="opens in new tab" onclick="window.open('https://fulltime.thefa.com/fixtures.html?selectedSeason=19010414&amp;selectedClub=745298120&amp;selectedFixtureGroupKey=','_blank')" style="background: none; border: none; color: #fff; cursor: pointer;">
+            <img src="https://fulltime.thefa.com/client/images/cs/fa-logo-table-footer.png" alt="FA Full Time Home" style="height:1.2em; vertical-align: middle;" border="0" target="_top">
+        </button>
+        <a href="https://find.englandfootball.com/club/26046132634" target="_blank" title="England Football Accredited Club" style="display:inline-block;">
+            <img src="ef-logo.svg" alt="England Football Accredited" style="height:28px; width:auto; vertical-align:middle;">
+        </a>
     </nav>
 </footer>
 
