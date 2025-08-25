@@ -163,6 +163,13 @@
         .dropdown.girls-dropdown .girls-link:active + .girls-submenu {
             display: block;
         }
+        .dropdown.mixed-dropdown .mixed-submenu {
+            display: none;
+        }
+        .dropdown.mixed-dropdown:hover .mixed-submenu,
+        .dropdown.mixed-dropdown:focus-within .mixed-submenu {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -194,7 +201,13 @@
                                     <a href="#" onclick="loadTab('u10galaxy.html', this); return false;">U10 Galaxy</a>
                                 </div>
                             </div>
-                            <a href="#" onclick="loadTab('mixed.html', this); return false;">Mixed</a>
+                            <div class="dropdown mixed-dropdown" style="position:relative;">
+                                <a href="#" class="mixed-link" onclick="return false;">Mixed <i class='fa fa-angle-right'></i></a>
+                                <div class="dropdown-content mixed-submenu" style="left:100%;top:0;min-width:8em; position:absolute;">
+                                    <a href="#" onclick="loadTab('u14strikers.html', this); return false;">U14 Strikers</a>
+                                    <a href="#" onclick="loadTab('u14phoenix.html', this); return false;">U14 Phoenix</a>
+                                </div>
+                            </div>
                             <a href="#" onclick="loadTab('adult.html', this); return false;">Adult</a>
                         </div>
                     </div>
