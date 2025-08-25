@@ -261,7 +261,20 @@
             fetch(url)
                 .then(response => response.text())
                 .then(html => {
-                    document.getElementById('tab-container').innerHTML = html;
+                    const container = document.getElementById('tab-container');
+                    container.innerHTML = html;
+                    // Execute scripts in loaded HTML
+                    const scripts = container.querySelectorAll('script');
+                    scripts.forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        if (oldScript.src) {
+                            newScript.src = oldScript.src;
+                        } else {
+                            newScript.textContent = oldScript.textContent;
+                        }
+                        oldScript.parentNode.removeChild(oldScript);
+                        container.appendChild(newScript);
+                    });
                 });
             // Close burger menu if open
             var navbar = document.getElementById('navbar');
