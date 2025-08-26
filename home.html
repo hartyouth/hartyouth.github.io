@@ -43,7 +43,8 @@
   "HART_FC_SOCIAL2.jpg",
   "Exec.jpg",
   "playsafe.jpg",
-  "WildcatsNew.jpg"
+  "WildcatsNew.jpg",
+  "newkit2526.png"
   ];
   let galleryIndex = 0;
   const galleryImg = document.getElementById('gallery-img');
@@ -53,6 +54,16 @@
   function showGalleryImg(idx) {
     galleryImg.style.opacity = 0.3;
     galleryImg.src = galleryImages[idx];
+    // If kit image, use object-fit: contain and reduce height
+    if (galleryImages[idx].includes('kit2526season')) {
+      galleryImg.style.objectFit = 'contain';
+      galleryImg.style.height = '70%';
+      galleryImg.style.background = '#fff';
+    } else {
+      galleryImg.style.objectFit = 'cover';
+      galleryImg.style.height = '100%';
+      galleryImg.style.background = '';
+    }
     setTimeout(() => {
       galleryImg.style.opacity = 1;
     }, 200);
