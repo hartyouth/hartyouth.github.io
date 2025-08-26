@@ -262,58 +262,64 @@
                                 .then(response => response.text())
                                 .then(html => {
                                         const container = document.getElementById('tab-container');
-                                        container.innerHTML = html;
-                                        // Execute scripts in loaded HTML after DOM update
-                                        setTimeout(() => {
-                                                const scripts = container.querySelectorAll('script');
-                                                scripts.forEach(oldScript => {
-                                                        const newScript = document.createElement('script');
-                                                        if (oldScript.src) {
-                                                                newScript.src = oldScript.src;
-                                                        } else {
-                                                                newScript.textContent = oldScript.textContent;
-                                                        }
-                                                        oldScript.parentNode.removeChild(oldScript);
-                                                        container.appendChild(newScript);
-                                                });
-                                                // Reattach quicklinks listeners if present
-                                                var wildcatsBtn = document.getElementById('quicklink-wildcats');
-                                                var squadBtn = document.getElementById('quicklink-squad');
-                                                var teamSelect = document.getElementById('teamQuickSelect');
-                                                function getNavbarTabButton(page) {
-                                                    var navbar = document.getElementById('navbar');
-                                                    if (!navbar) return null;
-                                                    var tablinks = navbar.getElementsByClassName('tablink');
-                                                    for (let i = 0; i < tablinks.length; i++) {
-                                                        if (tablinks[i].getAttribute('onclick') && tablinks[i].getAttribute('onclick').includes(page)) {
-                                                            return tablinks[i];
-                                                        }
-                                                    }
-                                                    return null;
-                                                }
-                                                if (wildcatsBtn) {
-                                                    wildcatsBtn.onclick = function(e) {
-                                                        e.preventDefault();
-                                                        var btn = getNavbarTabButton('wildcats.html');
-                                                        loadTab('wildcats.html', btn);
-                                                    };
-                                                }
-                                                if (squadBtn) {
-                                                    squadBtn.onclick = function(e) {
-                                                        e.preventDefault();
-                                                        var btn = getNavbarTabButton('squad.html');
-                                                        loadTab('squad.html', btn);
-                                                    };
-                                                }
-                                                if (teamSelect) {
-                                                    teamSelect.onchange = function() {
-                                                        if (teamSelect.value) {
-                                                            var btn = getNavbarTabButton(teamSelect.value);
-                                                            loadTab(teamSelect.value, btn);
-                                                        }
-                                                    };
-                                                }
-                                        }, 0);
+                                                            container.innerHTML = html;
+                                                            // Execute scripts in loaded HTML after DOM update
+                                                            setTimeout(() => {
+                                                                    const scripts = container.querySelectorAll('script');
+                                                                    scripts.forEach(oldScript => {
+                                                                            const newScript = document.createElement('script');
+                                                                            if (oldScript.src) {
+                                                                                    newScript.src = oldScript.src;
+                                                                            } else {
+                                                                                    newScript.textContent = oldScript.textContent;
+                                                                            }
+                                                                            oldScript.parentNode.removeChild(oldScript);
+                                                                            container.appendChild(newScript);
+                                                                    });
+                                                                    // Reattach quicklinks listeners if present
+                                                                    var wildcatsBtn = document.getElementById('quicklink-wildcats');
+                                                                    var squadBtn = document.getElementById('quicklink-squad');
+                                                                    var teamSelect = document.getElementById('teamQuickSelect');
+                                                                    function getNavbarTabButton(page) {
+                                                                        var navbar = document.getElementById('navbar');
+                                                                        if (!navbar) return null;
+                                                                        var tablinks = navbar.getElementsByClassName('tablink');
+                                                                        for (let i = 0; i < tablinks.length; i++) {
+                                                                            if (tablinks[i].getAttribute('onclick') && tablinks[i].getAttribute('onclick').includes(page)) {
+                                                                                return tablinks[i];
+                                                                            }
+                                                                        }
+                                                                        return null;
+                                                                    }
+                                                                    if (wildcatsBtn) {
+                                                                        wildcatsBtn.onclick = function(e) {
+                                                                            e.preventDefault();
+                                                                            var btn = getNavbarTabButton('wildcats.html');
+                                                                            loadTab('wildcats.html', btn);
+                                                                        };
+                                                                    }
+                                                                    if (squadBtn) {
+                                                                        squadBtn.onclick = function(e) {
+                                                                            e.preventDefault();
+                                                                            var btn = getNavbarTabButton('squad.html');
+                                                                            loadTab('squad.html', btn);
+                                                                        };
+                                                                    }
+                                                                    if (teamSelect) {
+                                                                        teamSelect.onchange = function() {
+                                                                            if (teamSelect.value) {
+                                                                                var btn = getNavbarTabButton(teamSelect.value);
+                                                                                loadTab(teamSelect.value, btn);
+                                                                            }
+                                                                        };
+                                                                    }
+                                                                    // If home.html loaded, re-run gallery script
+                                                                    if (url === 'home.html') {
+                                                                        if (typeof window.showGalleryImg === 'function') {
+                                                                            window.showGalleryImg(0);
+                                                                        }
+                                                                    }
+                                                            }, 0);
                                 });
             // Close burger menu if open
             var navbar = document.getElementById('navbar');
