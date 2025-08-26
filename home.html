@@ -10,6 +10,25 @@
   <p style="margin-top:1em; color:#fff; font-size:1.05em;">
     Hart Youth F.C. is proud to be England Football Accredited and affiliated to Hampshire FA. We are recognised for maintaining high standards on and off the pitch, providing a nurturing environment for players, coaches, and volunteers, and delivering inclusive football for our local community.
   </p>
+  <div style="margin-top:2em;">
+    <div style="display:flex; flex-wrap:wrap; gap:1em; align-items:center; justify-content:flex-start;">
+      <a href="#" id="quicklink-wildcats" style="background:#b71c1c; color:#fff; padding:0.5em 1.2em; border-radius:6px; text-decoration:none; font-weight:500; box-shadow:0 2px 8px rgba(183,28,28,0.12);">Wildcats</a>
+      <a href="#" id="quicklink-squad" style="background:#b71c1c; color:#fff; padding:0.5em 1.2em; border-radius:6px; text-decoration:none; font-weight:500; box-shadow:0 2px 8px rgba(183,28,28,0.12);">Squad</a>
+      <div style="position:relative;">
+        <select id="teamQuickSelect" style="background:#222; color:#fff; border:2px solid #b71c1c; border-radius:6px; padding:0.5em 1em; font-size:1em;">
+          <option value="">Quick Team Page...</option>
+          <option value="wildcats.html">Wildcats</option>
+          <option value="squad.html">Squad</option>
+          <option value="u8snowleopards.html">U8 Snowleopards</option>
+          <option value="u9rockets.html">U9 Rockets</option>
+          <option value="u9rocketss.html">U9 Rocketss</option>
+          <option value="u10galaxy.html">U10 Galaxy</option>
+          <option value="u14phoenix.html">U14 Phoenix</option>
+          <option value="u14strikers.html">U14 Strikers</option>
+        </select>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div style="max-width:700px; margin:2em auto;">
@@ -107,6 +126,31 @@
   }
   showGalleryImg(galleryIndex);
   updateThumbnails(galleryIndex);
+
+  document.addEventListener('DOMContentLoaded', function() {
+  var wildcatsBtn = document.getElementById('quicklink-wildcats');
+  var squadBtn = document.getElementById('quicklink-squad');
+  var teamSelect = document.getElementById('teamQuickSelect');
+  if (wildcatsBtn) {
+    wildcatsBtn.onclick = function(e) {
+      e.preventDefault();
+      loadTab('wildcats.html', null);
+    };
+  }
+  if (squadBtn) {
+    squadBtn.onclick = function(e) {
+      e.preventDefault();
+      loadTab('squad.html', null);
+    };
+  }
+  if (teamSelect) {
+    teamSelect.onchange = function() {
+      if (teamSelect.value) {
+        loadTab(teamSelect.value, null);
+      }
+    };
+  }
+});
 </script>
 </body>
 </html>
