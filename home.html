@@ -11,7 +11,7 @@
     Hart Youth F.C. is proud to be England Football Accredited and affiliated to Hampshire FA. We are recognised for maintaining high standards on and off the pitch, providing a nurturing environment for players, coaches, and volunteers, and delivering inclusive football for our local community.
   </p>
   <div style="margin-top:2em;">
-    <div style="display:flex; flex-wrap:wrap; gap:1em; align-items:center; justify-content:flex-start;">
+  <div style="display:flex; flex-wrap:wrap; gap:1em; align-items:center; justify-content:center;">
       <a href="#" id="quicklink-wildcats" style="background:#b71c1c; color:#fff; padding:0.5em 1.2em; border-radius:6px; text-decoration:none; font-weight:500; box-shadow:0 2px 8px rgba(183,28,28,0.12);">Wildcats</a>
       <a href="#" id="quicklink-squad" style="background:#b71c1c; color:#fff; padding:0.5em 1.2em; border-radius:6px; text-decoration:none; font-weight:500; box-shadow:0 2px 8px rgba(183,28,28,0.12);">Squad</a>
       <div style="position:relative;">
@@ -131,22 +131,49 @@
   var wildcatsBtn = document.getElementById('quicklink-wildcats');
   var squadBtn = document.getElementById('quicklink-squad');
   var teamSelect = document.getElementById('teamQuickSelect');
+  function getNavbarTabButton(page) {
+    // Try to find the corresponding tablink button in the navbar
+    var navbar = document.getElementById('navbar');
+    if (!navbar) return null;
+    var tablinks = navbar.getElementsByClassName('tablink');
+    for (let i = 0; i < tablinks.length; i++) {
+      if (tablinks[i].getAttribute('onclick') && tablinks[i].getAttribute('onclick').includes(page)) {
+        return tablinks[i];
+      }
+    }
+    return null;
+  }
   if (wildcatsBtn) {
     wildcatsBtn.onclick = function(e) {
       e.preventDefault();
-      loadTab('wildcats.html', null);
+      if (typeof loadTab === 'function') {
+        var btn = getNavbarTabButton('wildcats.html');
+        loadTab('wildcats.html', btn);
+      } else {
+        window.location.href = 'wildcats.html';
+      }
     };
   }
   if (squadBtn) {
     squadBtn.onclick = function(e) {
       e.preventDefault();
-      loadTab('squad.html', null);
+      if (typeof loadTab === 'function') {
+        var btn = getNavbarTabButton('squad.html');
+        loadTab('squad.html', btn);
+      } else {
+        window.location.href = 'squad.html';
+      }
     };
   }
   if (teamSelect) {
     teamSelect.onchange = function() {
       if (teamSelect.value) {
-        loadTab(teamSelect.value, null);
+        if (typeof loadTab === 'function') {
+          var btn = getNavbarTabButton(teamSelect.value);
+          loadTab(teamSelect.value, btn);
+        } else {
+          window.location.href = teamSelect.value;
+        }
       }
     };
   }
