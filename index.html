@@ -170,6 +170,32 @@
         .dropdown.mixed-dropdown:focus-within .mixed-submenu {
             display: block;
         }
+        .dropdown.mixed-dropdown .mixed-submenu.open-left {
+            left: auto !important;
+            right: 100% !important;
+        }
+        .dropdown.adult-dropdown .adult-submenu {
+            display: none;
+        }
+        .dropdown.adult-dropdown:hover .adult-submenu,
+        .dropdown.adult-dropdown:focus-within .adult-submenu {
+            display: block;
+        }
+        .dropdown.adult-dropdown .adult-link:active + .adult-submenu {
+            display: block;
+        }
+        .dropdown.adult-dropdown .adult-submenu.open-left {
+            left: auto !important;
+            right: 100% !important;
+        }
+        .dropdown.girls-dropdown .girls-submenu.open-left {
+            left: auto !important;
+            right: 100% !important;
+        }
+        .dropdown.girls-dropdown .girls-submenu:not(.open-left) {
+            left: 100% !important;
+            right: auto !important;
+        }
     </style>
 </head>
 <body>
@@ -194,7 +220,7 @@
                         <div class="dropdown-content">
                             <div class="dropdown girls-dropdown" style="position:relative;">
                                 <a href="#" class="girls-link" onclick="return false;">Girls <i class='fa fa-angle-right'></i></a>
-                                <div class="dropdown-content girls-submenu" style="left:100%;top:0;min-width:8em; position:absolute;">
+                                <div class="dropdown-content girls-submenu" id="girlsSubmenu" style="left:100%;top:0;min-width:8em; position:absolute;">
                                     <a href="#" onclick="loadTab('wildcats.html', this); return false;">Wildcats</a>
                                     <a href="#" onclick="loadTab('squad.html', this); return false;">Squad</a>
                                     <a href="#" onclick="loadTab('u8snowleopards.html', this); return false;">U8 Snow Leopards</a>
@@ -204,22 +230,7 @@
                             </div>
                             <div class="dropdown mixed-dropdown" style="position:relative;">
                                 <a href="#" class="mixed-link" onclick="return false;">Mixed <i class='fa fa-angle-right'></i></a>
-                                <div class="dropdown-content mixed-submenu" style="left:100%;top:0;min-width:8em; position:absolute;">
-                                    <a href="#" onclick="loadTab('u17comets.html', this); return false;">U17 Comets</a>
-                                    <a href="#" onclick="loadTab('u17rhinos.html', this); return false;">U17 Rhinos</a>
-                                    <a href="#" onclick="loadTab('u16lions.html', this); return false;">U16 Lions</a>
-                                    <a href="#" onclick="loadTab('u16tigers.html', this); return false;">U16 Tigers</a>
-                                    <a href="#" onclick="loadTab('u15redarrows.html', this); return false;">U15 Red Arrows</a>
-                                    <a href="#" onclick="loadTab('u13hurricanes.html', this); return false;">U13 Hurricanes</a>
-                                    <a href="#" onclick="loadTab('u13nitros.html', this); return false;">U13 Nitros</a>
-                                    <a href="#" onclick="loadTab('u12jaguars.html', this); return false;">U12 Jaguars</a>
-                                    <a href="#" onclick="loadTab('u12leopards.html', this); return false;">U12 Leopards</a>
-                                    <a href="#" onclick="loadTab('u12pumas.html', this); return false;">U12 Pumas</a>
-                                    <a href="#" onclick="loadTab('u11sharks.html', this); return false;">U11 Sharks</a>
-                                    <a href="#" onclick="loadTab('u11hawks.html', this); return false;">U11 Hawks</a>
-                                    <a href="#" onclick="loadTab('u11raptors.html', this); return false;">U11 Raptors</a>
-                                    <a href="#" onclick="loadTab('u10ninjas.html', this); return false;">U10 Ninjas</a>
-                                    <a href="#" onclick="loadTab('u10phantoms.html', this); return false;">U10 Phantoms</a>
+                                <div class="dropdown-content mixed-submenu" id="mixedSubmenu" style="left:100%;top:0;min-width:8em; position:absolute;">
                                     <a href="#" onclick="loadTab('u6devsquad.html', this); return false;">U6 Dev Squad</a>
                                     <a href="#" onclick="loadTab('u7cyclones.html', this); return false;">U7 Cyclones</a>
                                     <a href="#" onclick="loadTab('u7tornadoes.html', this); return false;">U7 Tornadoes</a>
@@ -229,11 +240,31 @@
                                     <a href="#" onclick="loadTab('u8thunderbolts.html', this); return false;">U8 Thunderbolts</a>
                                     <a href="#" onclick="loadTab('u9falcons.html', this); return false;">U9 Falcons</a>
                                     <a href="#" onclick="loadTab('u9ospreys.html', this); return false;">U9 Ospreys</a>
+                                    <a href="#" onclick="loadTab('u10ninjas.html', this); return false;">U10 Ninjas</a>
+                                    <a href="#" onclick="loadTab('u10phantoms.html', this); return false;">U10 Phantoms</a>
+                                    <a href="#" onclick="loadTab('u11sharks.html', this); return false;">U11 Sharks</a>
+                                    <a href="#" onclick="loadTab('u11hawks.html', this); return false;">U11 Hawks</a>
+                                    <a href="#" onclick="loadTab('u11raptors.html', this); return false;">U11 Raptors</a>
+                                    <a href="#" onclick="loadTab('u12jaguars.html', this); return false;">U12 Jaguars</a>
+                                    <a href="#" onclick="loadTab('u12leopards.html', this); return false;">U12 Leopards</a>
+                                    <a href="#" onclick="loadTab('u12pumas.html', this); return false;">U12 Pumas</a>
+                                    <a href="#" onclick="loadTab('u13hurricanes.html', this); return false;">U13 Hurricanes</a>
+                                    <a href="#" onclick="loadTab('u13nitros.html', this); return false;">U13 Nitros</a>
                                     <a href="#" onclick="loadTab('u14strikers.html', this); return false;">U14 Strikers</a>
                                     <a href="#" onclick="loadTab('u14phoenix.html', this); return false;">U14 Phoenix</a>
+                                    <a href="#" onclick="loadTab('u15redarrows.html', this); return false;">U15 Red Arrows</a>
+                                    <a href="#" onclick="loadTab('u16lions.html', this); return false;">U16 Lions</a>
+                                    <a href="#" onclick="loadTab('u16tigers.html', this); return false;">U16 Tigers</a>
+                                    <a href="#" onclick="loadTab('u17comets.html', this); return false;">U17 Comets</a>
+                                    <a href="#" onclick="loadTab('u17rhinos.html', this); return false;">U17 Rhinos</a>
                                 </div>
                             </div>
-                            <a href="#" onclick="loadTab('adult.html', this); return false;">Adult</a>
+                            <div class="dropdown adult-dropdown" style="position:relative;">
+                                <a href="#" class="adult-link" onclick="return false;">Adult <i class='fa fa-angle-right'></i></a>
+                                <div class="dropdown-content adult-submenu" style="left:100%;top:0;min-width:8em; position:absolute;">
+                                    <a href="#" onclick="loadTab('u23.html', this); return false;">U23 Team</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <button class="tablink" onclick="loadTab('contact.html', this)">Contact</button>
@@ -375,6 +406,99 @@
             }
         }
     </script>
+    <script>
+// Dynamically open mixed-submenu to the left if not enough space
+// Only runs after DOM is loaded
+// Adds/removes 'open-left' class based on available space
+// Targets #mixedSubmenu inside .mixed-dropdown
+
+document.addEventListener('DOMContentLoaded', function() {
+  var mixedDropdown = document.querySelector('.dropdown.mixed-dropdown');
+  var mixedSubmenu = document.getElementById('mixedSubmenu');
+  if (mixedDropdown && mixedSubmenu) {
+    mixedDropdown.addEventListener('mouseenter', function() {
+      mixedSubmenu.classList.remove('open-left');
+      mixedSubmenu.style.left = '100%';
+      mixedSubmenu.style.right = '';
+      // Use timeout to ensure submenu is rendered
+      setTimeout(function() {
+        var rect = mixedSubmenu.getBoundingClientRect();
+        var windowWidth = window.innerWidth;
+        if (rect.right > windowWidth) {
+          mixedSubmenu.classList.add('open-left');
+        }
+      }, 50);
+    });
+    mixedDropdown.addEventListener('mouseleave', function() {
+      mixedSubmenu.classList.remove('open-left');
+      mixedSubmenu.style.left = '100%';
+      mixedSubmenu.style.right = '';
+    });
+  }
+});
+</script>
+<script>
+// Dynamically open girls-submenu to the left if not enough space on the right
+// Only runs after DOM is loaded
+// Adds/removes 'open-left' class based on available space
+// Targets #girlsSubmenu inside .girls-dropdown
+
+document.addEventListener('DOMContentLoaded', function() {
+  var girlsDropdown = document.querySelector('.dropdown.girls-dropdown');
+  var girlsSubmenu = document.getElementById('girlsSubmenu');
+  if (girlsDropdown && girlsSubmenu) {
+    girlsDropdown.addEventListener('mouseenter', function() {
+      girlsSubmenu.classList.remove('open-left');
+      girlsSubmenu.style.left = '';
+      girlsSubmenu.style.right = '';
+      setTimeout(function() {
+        var rect = girlsSubmenu.getBoundingClientRect();
+        var windowWidth = window.innerWidth;
+        if (rect.right > windowWidth) {
+          girlsSubmenu.classList.add('open-left');
+        } else {
+          girlsSubmenu.classList.remove('open-left');
+        }
+      }, 50);
+    });
+    girlsDropdown.addEventListener('mouseleave', function() {
+      girlsSubmenu.classList.remove('open-left');
+      girlsSubmenu.style.left = '';
+      girlsSubmenu.style.right = '';
+    });
+  }
+});
+</script>
+<script>
+// Dynamically open adult-submenu to the left if not enough space on the right
+// Only runs after DOM is loaded
+// Adds/removes 'open-left' class based on available space
+// Targets .adult-submenu inside .adult-dropdown
+
+document.addEventListener('DOMContentLoaded', function() {
+  var adultDropdown = document.querySelector('.dropdown.adult-dropdown');
+  var adultSubmenu = adultDropdown ? adultDropdown.querySelector('.adult-submenu') : null;
+  if (adultDropdown && adultSubmenu) {
+    adultDropdown.addEventListener('mouseenter', function() {
+      adultSubmenu.classList.remove('open-left');
+      adultSubmenu.style.left = '100%';
+      adultSubmenu.style.right = '';
+      setTimeout(function() {
+        var rect = adultSubmenu.getBoundingClientRect();
+        var windowWidth = window.innerWidth;
+        if (rect.right > windowWidth) {
+          adultSubmenu.classList.add('open-left');
+        }
+      }, 50);
+    });
+    adultDropdown.addEventListener('mouseleave', function() {
+      adultSubmenu.classList.remove('open-left');
+      adultSubmenu.style.left = '100%';
+      adultSubmenu.style.right = '';
+    });
+  }
+});
+</script>
 </body>
 
 <footer id="page-footer" style="width: 100%; margin-top: 2em; padding: 1em 0; background: #222; display: none;">
