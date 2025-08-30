@@ -18,6 +18,15 @@
       <a href="#" id="quicklink-squad" style="display:inline-block; padding:0; border-radius:6px; box-shadow:0 2px 8px rgba(183,28,28,0.12); background:none;">
   <img src="squad.png" alt="Squad" title="Squad for Girls Aged 12-16" style="height:38px; width:auto; border-radius:6px; vertical-align:middle; box-shadow:0 2px 8px rgba(183,28,28,0.12);">
       </a>
+      <a href="#" id="quicklink-u6devsquad" style="display:inline-block; padding:0; border-radius:6px; box-shadow:0 2px 8px rgba(183,28,28,0.12); background:none;">
+        <span style="display:inline-block; background:#b71c1c; color:#fff; font-weight:bold; font-size:1em; border:2px solid #fff; border-radius:6px; padding:0.2em 0.8em; vertical-align:middle;">U6 DEV SQUAD</span>
+      </a>
+      <script>
+        document.getElementById('quicklink-u6devsquad').onclick = function(e) {
+          e.preventDefault();
+          loadTab && typeof loadTab === 'function' ? loadTab('u6devsquad.html', this) : window.location.href = 'u6devsquad.html';
+        };
+      </script>
       <div style="position:relative;">
         <select id="teamQuickSelect" style="background:#222; color:#fff; border:2px solid #b71c1c; border-radius:6px; padding:0.5em 1em; font-size:1em;">
           <option value="">Quick Team Page...</option>
@@ -90,7 +99,8 @@
   "Exec.jpg",
   "playsafe.jpg",
   "WildcatsNew.jpg",
-  "newkit2526.png"
+  "newkit2526.png",
+  "u6flyer.jpg"
   ];
   window.galleryIndex = 0;
   window.galleryImg = document.getElementById('gallery-img');
@@ -157,6 +167,7 @@
   document.addEventListener('DOMContentLoaded', function() {
   var wildcatsBtn = document.getElementById('quicklink-wildcats');
   var squadBtn = document.getElementById('quicklink-squad');
+  var u6devsquadBtn = document.getElementById('quicklink-u6devsquad');
   var teamSelect = document.getElementById('teamQuickSelect');
   function getNavbarTabButton(page) {
     // Try to find the corresponding tablink button in the navbar
@@ -190,6 +201,12 @@
       } else {
         window.location.href = 'squad.html';
       }
+    };
+  }
+  if (u6devsquadBtn) {
+    u6devsquadBtn.onclick = function(e) {
+      e.preventDefault();
+      window.location.href = 'u6devsquad.html';
     };
   }
   if (teamSelect) {
