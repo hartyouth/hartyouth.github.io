@@ -165,6 +165,10 @@
         }
         .dropdown.mixed-dropdown .mixed-submenu {
             display: none;
+            max-height: 350px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #b71c1c #222;
         }
         .dropdown.mixed-dropdown:hover .mixed-submenu,
         .dropdown.mixed-dropdown:focus-within .mixed-submenu {
@@ -230,7 +234,7 @@
                             </div>
                             <div class="dropdown mixed-dropdown" style="position:relative;">
                                 <a href="#" class="mixed-link" onclick="return false;">Mixed <i class='fa fa-angle-right'></i></a>
-                                <div class="dropdown-content mixed-submenu" id="mixedSubmenu" style="left:100%;top:0;min-width:8em; position:absolute;">
+                                <div class="dropdown-content mixed-submenu" id="mixedSubmenu" style="left:100%;top:0;min-width:8em; position:absolute; max-height:350px; overflow-y:auto;">
                                     <a href="#" onclick="loadTab('u6devsquad.html', this); return false;">U6 Dev Squad</a>
                                     <a href="#" onclick="loadTab('u7cyclones.html', this); return false;">U7 Cyclones</a>
                                     <a href="#" onclick="loadTab('u7tornadoes.html', this); return false;">U7 Tornadoes</a>
