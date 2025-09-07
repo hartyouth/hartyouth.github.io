@@ -4,16 +4,23 @@
     <title>Drag and Drop Example</title>
     <style>
         .draggable {
-            width: 60px;              /* Smaller width */
-            height: 60px;             /* Smaller height */
+            width: 100%;
+            min-height: 40px;
             background: #4CAF50;
             color: white;
-            text-align: center;
-            line-height: 60px;        /* Match new height */
+            text-align: left;
+            line-height: normal;
             margin-bottom: 10px;
             cursor: move;
-            margin-right: 10px;
-            display: inline-block;
+            margin-right: 0;
+            display: block;
+            box-sizing: border-box;
+            padding: 10px 18px;
+            border-radius: 6px;
+        }
+        .sub-dropzone {
+            min-height: 50px;
+            transition: background 0.2s;
         }
         .dropzone {
             width: 240px;
@@ -66,6 +73,15 @@
             <div class="dropzone-grid">
                 <div id="dropzone1" class="dropzone">
                     <div class="dropzone-label">zebon</div>
+                    <div id="zebon-5v5" class="sub-dropzone" style="border:1px dashed #4CAF50; margin:10px 0; padding:8px; border-radius:5px; background:#f6fff6;">
+                        <strong>5v5</strong>
+                    </div>
+                    <div id="zebon-7v7" class="sub-dropzone" style="border:1px dashed #2196F3; margin:10px 0; padding:8px; border-radius:5px; background:#f0f8ff;">
+                        <strong>7v7</strong>
+                    </div>
+                    <div id="zebon-11v11" class="sub-dropzone" style="border:1px dashed #FF9800; margin:10px 0; padding:8px; border-radius:5px; background:#fff8e1;">
+                        <strong>11v11</strong>
+                    </div>
                 </div>
                 <div id="dropzone2" class="dropzone">
                     <div class="dropzone-label">ancells</div>
@@ -99,20 +115,21 @@
     </div>
 
     <script>
-        const draggableItems = document.querySelectorAll('.draggable');
-        const dropZones = document.querySelectorAll('.dropzone');
-
-        draggableItems.forEach(item => {
-            item.addEventListener('dragstart', function(e) {
-                e.dataTransfer.setData('text/plain', e.target.id);
+        // Drag and drop logic for static items
+        function enableDragForItems(selector) {
+            const draggableItems = document.querySelectorAll(selector);
+            draggableItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', e.target.id);
+                });
             });
-        });
+        }
 
+        const dropZones = document.querySelectorAll('.dropzone, .sub-dropzone');
         dropZones.forEach(zone => {
             zone.addEventListener('dragover', function(e) {
                 e.preventDefault();
             });
-
             zone.addEventListener('drop', function(e) {
                 e.preventDefault();
                 const data = e.dataTransfer.getData('text/plain');
@@ -120,6 +137,79 @@
                 zone.appendChild(draggedElement);
             });
         });
+
+        // Scrape Full-Time games, filter for Hart teams, and make those draggable
+        function makeFullTimeGamesDraggable() {
+            const fullTimeDiv = document.getElementById('lrep277946729');
+            if (!fullTimeDiv) return;
+            // Disconnect observer to prevent loop
+            if (window.fullTimeObserver) window.fullTimeObserver.disconnect();
+            // Find tables in the loaded content
+            const tables = fullTimeDiv.getElementsByTagName('table');
+            if (tables.length === 0) {
+                // Reconnect observer if no table found
+                if (window.fullTimeObserver) window.fullTimeObserver.observe(fullTimeDiv, { childList: true, subtree: true });
+                return;
+            }
+            // Assume first table contains games
+            const table = tables[0];
+            const rows = Array.from(table.getElementsByTagName('tr'));
+            // Remove the table from display
+            table.style.display = 'none';
+            // Remove any previously added fixture blocks
+            const oldBlocks = fullTimeDiv.querySelectorAll('.hart-fixture-block');
+            oldBlocks.forEach(block => block.remove());
+            // For each Hart team row, create a styled div block
+            rows.forEach((row, idx) => {
+                // Skip header rows
+                if (row.parentElement.tagName === 'THEAD' || row.querySelector('th')) return;
+                const cells = Array.from(row.getElementsByTagName('td'));
+                if (cells.some(cell => /hart/i.test(cell.textContent))) {
+                    // Build fixture text from all cells
+                    const fixtureText = cells.map(cell => cell.textContent.trim()).join(' | ');
+                    // Create block
+                    const block = document.createElement('div');
+                    block.className = 'draggable hart-fixture-block';
+                    block.id = 'hart_fixture_' + idx;
+                    block.setAttribute('draggable', 'true');
+                    block.style.background = '#4CAF50';
+                    block.style.color = 'white';
+                    block.style.cursor = 'move';
+                    block.style.marginBottom = '10px';
+                    block.style.borderRadius = '6px';
+                    block.style.boxShadow = '0 2px 8px rgba(76,175,80,0.18)';
+                    block.style.fontSize = '1.08em';
+                    block.style.padding = '10px 18px';
+                    block.style.width = '100%';
+                    block.style.boxSizing = 'border-box';
+                    block.textContent = fixtureText;
+                    // Add hover effect
+                    block.addEventListener('mouseenter', function() {
+                        block.style.background = '#388e3c';
+                    });
+                    block.addEventListener('mouseleave', function() {
+                        block.style.background = '#4CAF50';
+                    });
+                    fullTimeDiv.appendChild(block);
+                }
+            });
+            enableDragForItems('#lrep277946729 .draggable');
+            // Reconnect observer after DOM changes
+            if (window.fullTimeObserver) window.fullTimeObserver.observe(fullTimeDiv, { childList: true, subtree: true });
+        }
+
+        // Observe changes to Full-Time div and process games
+        window.fullTimeObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList') {
+                    makeFullTimeGamesDraggable();
+                }
+            });
+        });
+        const fullTimeDiv = document.getElementById('lrep277946729');
+        if (fullTimeDiv) {
+            window.fullTimeObserver.observe(fullTimeDiv, { childList: true, subtree: true });
+        }
     </script>
 </body>
 </html>
