@@ -118,18 +118,6 @@
       [imgSrc, note] = imgData.split("|");
     }
     window.galleryImg.src = imgSrc;
-    // Make portersgolfqr.png 50% smaller
-    if (imgSrc === 'portersgolfqr.png') {
-      window.galleryImg.style.width = '50%';
-      window.galleryImg.style.height = '50%';
-      window.galleryImg.style.display = 'block';
-      window.galleryImg.style.margin = '0 auto';
-    } else {
-      window.galleryImg.style.width = '100%';
-      window.galleryImg.style.height = '100%';
-      window.galleryImg.style.display = '';
-      window.galleryImg.style.margin = '';
-    }
     // If kit image, use object-fit: contain and reduce height
     if (imgSrc.includes('kit2526season')) {
       window.galleryImg.style.objectFit = 'contain';
