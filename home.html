@@ -81,7 +81,7 @@
 
 <h3 style="text-align:center; color:#f9fafb; margin-top:3em;">Our Wonderful Sponsors</h3>
 <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1em; margin-bottom:2em;">
-  <div class="gallery"><img src="portersgolf.jpg" alt="Porters Golf" style="height:100px; border-radius:8px;"></div>
+  <div class="gallery"><img src="portersgolf1.jpg" alt="portersgolf1.jpg" style="height:100px; border-radius:8px;"></div>
   <div class="gallery"><img src="creativegravy.jpg" alt="creativegravy.jpg" style="height:100px; border-radius:8px;"></div>
   <div class="gallery"><img src="eddieshomemaintenance.jpg" alt="eddieshomemaintenance.jpg" style="height:100px; border-radius:8px;"></div>
   <div class="gallery"><img src="fleetmortgages_new.png" alt="fleetmortgages_new.png" style="height:100px; border-radius:8px;"></div>
@@ -118,6 +118,18 @@
       [imgSrc, note] = imgData.split("|");
     }
     window.galleryImg.src = imgSrc;
+    // Make portersgolfqr.png 50% smaller
+    if (imgSrc === 'portersgolfqr.png') {
+      window.galleryImg.style.width = '50%';
+      window.galleryImg.style.height = '50%';
+      window.galleryImg.style.display = 'block';
+      window.galleryImg.style.margin = '0 auto';
+    } else {
+      window.galleryImg.style.width = '100%';
+      window.galleryImg.style.height = '100%';
+      window.galleryImg.style.display = '';
+      window.galleryImg.style.margin = '';
+    }
     // If kit image, use object-fit: contain and reduce height
     if (imgSrc.includes('kit2526season')) {
       window.galleryImg.style.objectFit = 'contain';
