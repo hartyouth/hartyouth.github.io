@@ -81,7 +81,6 @@
 
 <h3 style="text-align:center; color:#f9fafb; margin-top:3em;">Our Wonderful Sponsors</h3>
 <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1em; margin-bottom:2em;">
-  <div class="gallery"><img src="Portersgolf.jpg" alt="Porters Golf" style="height:100px; border-radius:8px;"></div>
   <div class="gallery"><img src="creativegravy.jpg" alt="creativegravy.jpg" style="height:100px; border-radius:8px;"></div>
   <div class="gallery"><img src="eddieshomemaintenance.jpg" alt="eddieshomemaintenance.jpg" style="height:100px; border-radius:8px;"></div>
   <div class="gallery"><img src="fleetmortgages_new.png" alt="fleetmortgages_new.png" style="height:100px; border-radius:8px;"></div>
@@ -93,6 +92,7 @@
 <script>
 // Gallery script runs immediately when loaded dynamically
   window.galleryImages = [
+  "portersgolfqr.png|New Sponsor!",
   "HART_FC_1080X1080_GIRLS_CAN.jpg",
   "HART_FC_SOCIAL.jpg",
   "HartU12sTrophyNight.jpg",
@@ -110,9 +110,15 @@
   window.thumbnailsDiv = document.getElementById('gallery-thumbnails');
   window.showGalleryImg = function(idx) {
     window.galleryImg.style.opacity = 0.3;
-    window.galleryImg.src = window.galleryImages[idx];
+    let imgData = window.galleryImages[idx];
+    let imgSrc = imgData;
+    let note = "";
+    if (imgData.includes("|")) {
+      [imgSrc, note] = imgData.split("|");
+    }
+    window.galleryImg.src = imgSrc;
     // If kit image, use object-fit: contain and reduce height
-    if (window.galleryImages[idx].includes('kit2526season')) {
+    if (imgSrc.includes('kit2526season')) {
       window.galleryImg.style.objectFit = 'contain';
       window.galleryImg.style.height = '70%';
       window.galleryImg.style.background = '#fff';
@@ -124,6 +130,26 @@
     setTimeout(() => {
       window.galleryImg.style.opacity = 1;
     }, 200);
+    // Show note if present
+    let noteDiv = document.getElementById('gallery-note');
+    if (!noteDiv) {
+      noteDiv = document.createElement('div');
+      noteDiv.id = 'gallery-note';
+      noteDiv.style.position = 'absolute';
+      noteDiv.style.top = '16px';
+      noteDiv.style.left = '16px';
+      noteDiv.style.background = '#1976d2';
+      noteDiv.style.color = '#fff';
+      noteDiv.style.fontWeight = 'bold';
+      noteDiv.style.fontSize = '1.1em';
+      noteDiv.style.padding = '6px 16px';
+      noteDiv.style.borderRadius = '8px';
+      noteDiv.style.zIndex = '10';
+      noteDiv.style.boxShadow = '0 2px 8px rgba(25,118,210,0.18)';
+      window.galleryImg.parentNode.appendChild(noteDiv);
+    }
+    noteDiv.textContent = note;
+    noteDiv.style.display = note ? 'block' : 'none';
     window.updateThumbnails(idx);
   }
   window.moveGallery = function(delta) {
@@ -145,8 +171,9 @@
   window.updateThumbnails = function(activeIdx) {
     window.thumbnailsDiv.innerHTML = "";
     window.galleryImages.forEach((img, idx) => {
+      let imgSrc = img.includes("|") ? img.split("|")[0] : img;
       const thumb = document.createElement('img');
-      thumb.src = img;
+      thumb.src = imgSrc;
       thumb.style.height = '48px';
       thumb.style.width = '48px';
       thumb.style.objectFit = 'cover';
