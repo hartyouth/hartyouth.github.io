@@ -18,6 +18,7 @@
       <a href="#" id="quicklink-squad" style="display:inline-block; padding:0; border-radius:6px; box-shadow:0 2px 8px rgba(183,28,28,0.12); background:none;">
   <img src="squad.png" alt="Squad" title="Squad for Girls Aged 12-16" style="height:38px; width:auto; border-radius:6px; vertical-align:middle; box-shadow:0 2px 8px rgba(183,28,28,0.12);">
       </a>
+        <a href="#" id="quicklink-devsquad" onclick="if (typeof loadTab === 'function') { loadTab('devsquad.html', this); } else { window.location.href = 'devsquad.html'; } return false;" style="display:inline-block; padding:0.45em 0.8em; border:2px solid #b71c1c; border-radius:6px; background:#b71c1c; color:#fff; font-weight:bold; text-decoration:none; box-shadow:0 2px 8px rgba(183,28,28,0.12);">U6 Dev Squad</a>
       <div style="position:relative;">
         <select id="teamQuickSelect" style="background:#222; color:#fff; border:2px solid #b71c1c; border-radius:6px; padding:0.5em 1em; font-size:1em;">
           <option value="">Quick Team Page...</option>
@@ -218,6 +219,7 @@
   document.addEventListener('DOMContentLoaded', function() {
   var wildcatsBtn = document.getElementById('quicklink-wildcats');
   var squadBtn = document.getElementById('quicklink-squad');
+  var devSquadBtn = document.getElementById('quicklink-devsquad');
   var teamSelect = document.getElementById('teamQuickSelect');
   function getNavbarTabButton(page) {
     // Try to find the corresponding tablink button in the navbar
@@ -250,6 +252,17 @@
         loadTab('squad.html', btn);
       } else {
         window.location.href = 'squad.html';
+      }
+    };
+  }
+  if (devSquadBtn) {
+    devSquadBtn.onclick = function(e) {
+      e.preventDefault();
+      if (typeof loadTab === 'function') {
+        var btn = getNavbarTabButton('devsquad.html');
+        loadTab('devsquad.html', btn);
+      } else {
+        window.location.href = 'devsquad.html';
       }
     };
   }
