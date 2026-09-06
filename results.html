@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hart Youth Fixtures</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body style="background:#111; color:#fff; font-family:Arial,sans-serif; margin:0;">
+  <main style="max-width:800px; margin:2em auto; padding:0 1em;">
+    <section style="border:2px solid #b71c1c; border-radius:10px; background:#000; color:#fff; padding:1.5em; box-shadow:0 2px 8px rgba(183,28,28,0.12);">
+      <h1 style="margin-top:0; color:#fff; text-align:center;">Hart Youth Fixtures</h1>
+      <p style="text-align:center; color:#fff;">Results and fixtures from the Hart Youth FC FA Full-Time report.</p>
+      <details style="max-width:700px; margin:2em auto 0; border:1px solid #b71c1c; border-radius:6px; background:#222; padding:.5em .75em;">
+        <summary style="color:#b71c1c; cursor:pointer; font-weight:700;">Show all fixtures</summary>
+        <div id="lrep363942307" style="width:100%; max-width:700px; margin:1em auto 0; background:#222; border-radius:8px; padding:1em; box-shadow:0 1px 4px rgba(183,28,28,0.08);">
+          <strong>Results and upcoming fixtures:</strong><br>
+          Data loading....<a href="null">click here for null</a><br/><br/>
+          <a href="http://www.thefa.com/FULL-TIME">FULL-TIME Home</a>
+        </div>
+      </details>
+      <section id="homeFixtures" style="max-width:700px; margin:2em auto 0;">
+        <h2 style="color:#b71c1c; text-align:center;">Hart Youth FC home fixtures</h2>
+        <p id="homeFixturesStatus" style="text-align:center; color:#ccc;">Waiting for the FA Full-Time fixtures to load...</p>
+        <div id="homeFixturesTable" style="overflow-x:auto;"></div>
+      </section>
+      <p style="text-align:center;">
+        <a href="https://fulltime.thefa.com/index.html?divisionseason=363942307" target="_blank" rel="noopener" style="color:#b71c1c;">Open the report on FA Full-Time</a>
+      </p>
+    </section>
+  </main>
+  <script language="javascript" type="text/javascript">
+    var lrcode = '363942307'
+  </script>
+  <script language="Javascript" type="text/javascript" src="https://fulltime.thefa.com/client/api/cs1.js"></script>
+  <script>
+    (function () {
+      const source = document.getElementById('lrep363942307');
+      const output = document.getElementById('homeFixturesTable');
+      const status = document.getElementById('homeFixturesStatus');
+      const observer = new MutationObserver(buildHomeFixturesTable);
+
+      function clean(value) {
+        return value.replace(/\s+/g, ' ').trim();
+      }
+
+      function buildHomeFixturesTable() {
+        const sourceTable = source.querySelector('table');
+        if (!sourceTable) return;
+        const rows = Array.from(sourceTable.querySelectorAll('tr'));
+        if (!rows.length) return;
+
+        const headerRow = rows.find(row => row.querySelector('th'));
+        const sourceHeaders = headerRow ? Array.from(headerRow.children).map(cell => clean(cell.textContent)) : [];
+        const columnCount = Math.max(...rows.map(row => row.querySelectorAll('th, td').length));
+        const fallbackHeaders = ['Fixture', 'Home team', 'Status', 'Away team', 'Venue'];
+        const headerCells = Array.from({ length: columnCount }, (_, index) => sourceHeaders[index] || fallbackHeaders[index] || `Detail ${index + 1}`);
+        const homeIndex = headerCells.findIndex(header => /home(\s+team)?|home side/i.test(header));
+        let currentDateTime = '';
+        const fixtureRows = [];
+        rows.forEach(row => {
+          const cells = Array.from(row.querySelectorAll('td')).map(cell => clean(cell.textContent));
+          if (row === headerRow || !cells.length) return;
+          if (cells.length === 1 && /^(?:mon|tue|wed|thu|fri|sat|sun)\b.*\b\d{4}\b.*\b\d{1,2}:\d{2}\b/i.test(cells[0])) {
+            currentDateTime = cells[0];
+            return;
+          }
+          if (currentDateTime) fixtureRows.push({ dateTime: currentDateTime, cells });
+        });
+        const homeRows = fixtureRows.filter(item => {
+          const homeText = homeIndex >= 0 ? item.cells[homeIndex] : item.cells[1];
+          return homeText && /hart\s*youth|hart\s*fc/i.test(homeText);
+        });
+
+        if (!homeRows.length) {
+          status.textContent = 'No Hart Youth FC home fixtures were found in this report.';
+          return;
+        }
+
+        const fixtureIndex = headerCells.findIndex(header => /fixture/i.test(header));
+        const displayHeaders = headerCells.filter((_, index) => index !== fixtureIndex).map(header => /status/i.test(header) ? '' : header);
+        const displayHomeIndex = headerCells.slice(0, homeIndex).filter((_, index) => index !== fixtureIndex).length + 1;
+        const headerHtml = ['KO', ...displayHeaders].map((header, index) => `<th style="padding:.35em .5em; border:1px solid #555; background:#000; color:#fff; white-space:nowrap;${index === displayHomeIndex ? ' text-align:right;' : ' text-align:left;'}">${escapeHtml(header)}</th>`).join('');
+        const groupedByDay = homeRows.reduce((groups, item) => {
+          const day = item.dateTime.replace(/\s+\d{1,2}:\d{2}.*$/, '');
+          (groups[day] ||= []).push(item);
+          return groups;
+        }, {});
+        const daySections = Object.entries(groupedByDay).map(([day, dayRows]) => {
+          dayRows.sort((a, b) => {
+            const homeA = a.cells[homeIndex >= 0 ? homeIndex : 1] || '';
+            const homeB = b.cells[homeIndex >= 0 ? homeIndex : 1] || '';
+            const ageA = Number((homeA.match(/\bU(\d{1,2})\b/i) || [, 99])[1]);
+            const ageB = Number((homeB.match(/\bU(\d{1,2})\b/i) || [, 99])[1]);
+            return ageA - ageB || homeA.localeCompare(homeB);
+          });
+          const table = document.createElement('table');
+          table.style.cssText = 'width:100%; min-width:max-content; border-collapse:collapse; background:#000; color:#fff; font-size:.8em;';
+          table.innerHTML = `<thead><tr>${headerHtml}</tr></thead><tbody>${dayRows.map(item => { const kickoff = (item.dateTime.match(/\b\d{1,2}:\d{2}(?:\s*[ap]m)?\b/i) || [''])[0]; const rowCells = item.cells.map((cell, index) => ({ cell, index })).filter(item => item.index !== fixtureIndex); return `<tr><td style="padding:.35em .5em; border:1px solid #444; color:#fff; white-space:nowrap; vertical-align:top;">${escapeHtml(kickoff)}</td>${rowCells.map(item => `<td style="padding:.35em .5em; border:1px solid #444; color:#fff; white-space:nowrap; vertical-align:top;${item.index === homeIndex ? ' text-align:right;' : ''}">${escapeHtml(item.cell)}</td>`).join('')}</tr>`; }).join('')}</tbody>`;
+          const section = document.createElement('section');
+          section.style.cssText = 'margin-top:.75em; overflow-x:auto;';
+          const details = document.createElement('details');
+          details.open = true;
+          details.style.cssText = 'border:1px solid #b71c1c; border-radius:6px; background:#222; padding:.25em .5em;';
+          const summary = document.createElement('summary');
+          summary.style.cssText = 'color:#b71c1c; cursor:pointer; font-weight:700; font-size:.9em; white-space:nowrap;';
+          summary.textContent = `${day} - show fixtures`;
+          details.appendChild(summary);
+          details.appendChild(table);
+          section.appendChild(details);
+          return section;
+        });
+        output.replaceChildren(...daySections);
+        status.textContent = `${homeRows.length} Hart Youth FC home fixture${homeRows.length === 1 ? '' : 's'} found.`;
+        observer.disconnect();
+      }
+
+      function escapeHtml(value) {
+        return value.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+      }
+
+      observer.observe(source, { childList: true, subtree: true });
+      buildHomeFixturesTable();
+    }());
+  </script>
+</body>
+</html>
