@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pitch Allocations</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #64707d;
+      --paper: #f5f7f9;
+      --panel: #ffffff;
+      --line: #d9e0e7;
+      --red: #b71c1c;
+      --red-dark: #811313;
+      --green: #e6f4ec;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+    .page { max-width: 1180px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+    .masthead { display: flex; justify-content: space-between; gap: 1rem; align-items: end; border-bottom: 3px solid var(--red); padding-bottom: 1rem; }
+    h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: .02em; }
+    .eyebrow { margin: 0 0 .35rem; color: var(--red); font: 700 .78rem/1.2 Arial, sans-serif; letter-spacing: .14em; text-transform: uppercase; }
+    .intro { max-width: 680px; color: var(--muted); font-size: 1.05rem; line-height: 1.55; }
+    .controls { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(180px, 260px) auto; gap: .75rem; align-items: end; margin: 1.5rem 0; padding: 1rem; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+    label { display: block; color: var(--muted); font: 700 .75rem/1.2 Arial, sans-serif; letter-spacing: .06em; text-transform: uppercase; }
+    select, input[type='file'], button { width: 100%; margin-top: .4rem; padding: .72rem .8rem; border: 1px solid #bfc9d4; border-radius: 5px; background: white; color: var(--ink); font: 1rem Arial, sans-serif; }
+    button { width: auto; cursor: pointer; background: var(--red); border-color: var(--red); color: white; font-weight: 700; }
+    button:hover { background: var(--red-dark); }
+    .file-control { grid-column: 1 / -1; }
+    .status { margin: 1rem 0; color: var(--muted); font: .9rem/1.4 Arial, sans-serif; }
+    .status.error { color: var(--red-dark); font-weight: 700; }
+    .date-group { margin: 1.25rem 0 2rem; }
+    .date-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin: 0 0 .65rem; padding-bottom: .45rem; border-bottom: 1px solid var(--line); }
+    .date-heading h2 { margin: 0; font-size: 1.55rem; }
+    .date-heading span { color: var(--muted); font: .78rem Arial, sans-serif; }
+    .allocation-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: .75rem; }
+    .allocation { padding: .9rem; background: var(--panel); border-left: 5px solid var(--red); border-radius: 5px; box-shadow: 0 2px 6px rgba(23,32,42,.06); }
+    .team { display: block; margin-bottom: .35rem; font: 700 1rem Arial, sans-serif; }
+    .age { color: var(--red); font: 700 .78rem Arial, sans-serif; }
+    .pitch { margin-top: .45rem; color: var(--muted); font: .92rem/1.35 Arial, sans-serif; }
+    .venue { margin-top: .7rem; padding-top: .6rem; border-top: 1px solid var(--line); color: var(--ink); font: .88rem/1.35 Arial, sans-serif; }
+    .venue strong { color: var(--red); }
+    .empty { padding: 2rem; text-align: center; background: var(--panel); border: 1px dashed var(--line); color: var(--muted); font: 1rem Arial, sans-serif; }
+    @media (max-width: 700px) {
+      .masthead { display: block; }
+      .controls { grid-template-columns: 1fr; }
+      .file-control { grid-column: auto; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">Hart Youth FC</p>
+        <h1>Pitch allocations</h1>
+      </div>
+      <p class="intro">Find every team's pitch, fixture time, or away status by date. Select a team to follow its season at a glance.</p>
+    </header>
+
+    <section class="controls" aria-label="Pitch allocation filters">
+      <label>Team
+        <select id="teamFilter"><option value="">All teams</option></select>
+      </label>
+      <label>Date
+        <select id="dateFilter"><option value="">All dates</option></select>
+      </label>
+      <button id="resetButton" type="button">Reset filters</button>
+      <label class="file-control">Load a CSV file when viewing this page directly from your computer
+        <input id="csvFile" type="file" accept=".csv,text/csv">
+      </label>
+    </section>
+
+    <p id="status" class="status" role="status">Loading pitch allocations...</p>
+    <section id="results" aria-live="polite"></section>
+  </main>
+
+  <script>
+    const csvPath = 'Hart FC Pitch Allocations 25-26.csv';
+    const teamFilter = document.getElementById('teamFilter');
+    const dateFilter = document.getElementById('dateFilter');
+    const csvFile = document.getElementById('csvFile');
+    const resetButton = document.getElementById('resetButton');
+    const status = document.getElementById('status');
+    const results = document.getElementById('results');
+    let allocations = [];
+
+    function parseCsv(text) {
+      const rows = [];
+      let row = [], cell = '', quoted = false;
+      for (let i = 0; i < text.length; i += 1) {
+        const char = text[i];
+        if (char === '"') {
+          if (quoted && text[i + 1] === '"') { cell += '"'; i += 1; }
+          else { quoted = !quoted; }
+        } else if (char === ',' && !quoted) {
+          row.push(cell.trim()); cell = '';
+        } else if ((char === '\n' || char === '\r') && !quoted) {
+          if (char === '\r' && text[i + 1] === '\n') i += 1;
+          row.push(cell.trim()); rows.push(row); row = []; cell = '';
+        } else {
+          cell += char;
+        }
+      }
+      if (cell || row.length) { row.push(cell.trim()); rows.push(row); }
+      return rows;
+    }
+
+    function parseDate(value) {
+      const match = value.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+      return match ? `${match[3]}-${match[2]}-${match[1]}` : '';
+    }
+
+    function formatDate(value) {
+      return new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(`${value}T12:00:00`));
+    }
+
+    function loadData(text) {
+      const rows = parseCsv(text);
+      const ageRow = rows.findIndex(row => row.some(cell => /^Age Group$/i.test(cell)));
+      const teamRow = rows.findIndex(row => row.some(cell => /^Team Name$/i.test(cell)));
+      if (ageRow < 0 || teamRow < 0) throw new Error('The CSV does not contain Age Group and Team Name headers.');
+      const pitchRow = rows.find(row => row.some(cell => /^Pitches$/i.test(cell))) || [];
+      const teams = rows[teamRow].map((team, index) => ({ team, age: rows[ageRow][index] || '', venue: pitchRow[index] || '' })).filter(item => item.team && item.team !== 'Team Name');
+      allocations = [];
+      rows.slice(Math.max(ageRow, teamRow) + 1).forEach(row => {
+        const date = parseDate(row[0] || '');
+        if (!date) return;
+        teams.forEach((item, index) => {
+          const value = (row[index] || '').trim();
+          if (value) allocations.push({ date, team: item.team, age: item.age, venue: item.venue, value });
+        });
+      });
+      const dates = [...new Set(allocations.map(item => item.date))].sort();
+      const teamNames = [...new Set(allocations.map(item => item.team))].sort((a, b) => a.localeCompare(b));
+      teamFilter.innerHTML = '<option value="">All teams</option>' + teamNames.map(team => `<option value="${escapeHtml(team)}">${escapeHtml(team)}</option>`).join('');
+      dateFilter.innerHTML = '<option value="">All dates</option>' + dates.map(date => `<option value="${date}">${formatDate(date)}</option>`).join('');
+      status.textContent = `${allocations.length} allocations loaded across ${teamNames.length} teams.`;
+      status.classList.remove('error');
+      render();
+    }
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+    }
+
+    function allocationLocation(value, venue) {
+      const normalized = value.toLowerCase();
+      if (/\bnf\b/.test(normalized)) return 'No fixture scheduled';
+      if (/\baway\b/.test(normalized) && !/away\s*\(home\)/.test(normalized)) return 'Away fixture - opponent venue not listed';
+      return venue || 'Location not listed';
+    }
+
+    function render() {
+      const selectedTeam = teamFilter.value;
+      const selectedDate = dateFilter.value;
+      const filtered = allocations.filter(item => (!selectedTeam || item.team === selectedTeam) && (!selectedDate || item.date === selectedDate));
+      const grouped = filtered.reduce((groups, item) => {
+        (groups[item.date] ||= []).push(item);
+        return groups;
+      }, {});
+      const dates = Object.keys(grouped).sort();
+      if (!dates.length) {
+        results.innerHTML = '<div class="empty">No pitch allocations match these filters.</div>';
+        return;
+      }
+      results.innerHTML = dates.map(date => `
+        <section class="date-group">
+          <div class="date-heading"><h2>${formatDate(date)}</h2><span>${grouped[date].length} allocation${grouped[date].length === 1 ? '' : 's'}</span></div>
+          <div class="allocation-grid">
+            ${grouped[date].sort((a, b) => a.team.localeCompare(b.team)).map(item => `
+              <article class="allocation">
+                <span class="team">${escapeHtml(item.team)}</span>
+                <span class="age">${escapeHtml(item.age)}</span>
+                <div class="pitch">${escapeHtml(item.value)}</div>
+                <div class="venue"><strong>Location:</strong> ${escapeHtml(allocationLocation(item.value, item.venue))}</div>
+              </article>`).join('')}
+          </div>
+        </section>`).join('');
+    }
+
+    teamFilter.addEventListener('change', render);
+    dateFilter.addEventListener('change', render);
+    resetButton.addEventListener('click', () => { teamFilter.value = ''; dateFilter.value = ''; render(); });
+    csvFile.addEventListener('change', event => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => { try { loadData(reader.result); } catch (error) { status.textContent = error.message; status.classList.add('error'); } };
+      reader.readAsText(file);
+    });
+
+    fetch(csvPath).then(response => {
+      if (!response.ok) throw new Error('CSV request failed');
+      return response.text();
+    }).then(loadData).catch(() => {
+      status.textContent = 'Choose the CSV file above to load allocations when viewing this page directly from your computer.';
+      status.classList.add('error');
+    });
+  </script>
+</body>
+</html>
