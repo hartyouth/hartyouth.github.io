@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>U6 Dev Squad Flyer | Hart Youth FC</title>
+  <style>
+    :root { --red:#c51d2d; --red-dark:#8f1320; --ink:#f8f5f2; --muted:#d9d2cc; --panel:#171517; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; background:#0c0b0d; color:var(--ink); font-family:Arial,Helvetica,sans-serif; }
+    .flyer { width:min(100%, 720px); min-height:960px; margin:0 auto; padding:clamp(2rem,6vw,4.5rem) clamp(1.25rem,6vw,4.5rem); position:relative; overflow:hidden; background:radial-gradient(circle at 85% 8%, rgba(197,29,45,.28), transparent 28%), linear-gradient(145deg,#171517 0%,#0e0c10 58%,#271018 100%); }
+    .flyer::before { content:""; position:absolute; width:360px; height:360px; right:-170px; top:-150px; border:1px solid rgba(255,255,255,.15); border-radius:50%; box-shadow:0 0 0 28px rgba(197,29,45,.06),0 0 0 56px rgba(197,29,45,.04); }
+    .brand { position:relative; z-index:1; color:var(--red); font-size:.82rem; font-weight:800; letter-spacing:.18em; text-transform:uppercase; }
+    h1 { position:relative; z-index:1; max-width:620px; margin:.7rem 0 0; font-size:clamp(3.1rem,10vw,6.5rem); line-height:.88; letter-spacing:-.06em; text-transform:uppercase; }
+    .strap { position:relative; z-index:1; max-width:470px; margin:1.4rem 0 2rem; color:var(--muted); font-size:clamp(1rem,2.2vw,1.3rem); line-height:1.45; }
+    .hero-rule { width:90px; height:7px; margin:0 0 2rem; background:var(--red); }
+    .session { position:relative; z-index:1; display:grid; grid-template-columns:1fr 1fr; gap:1px; margin:0 0 2rem; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.18); }
+    .session-item { padding:1.15rem; background:rgba(23,21,23,.94); }
+    .label { display:block; margin-bottom:.35rem; color:var(--red); font-size:.7rem; font-weight:800; letter-spacing:.15em; text-transform:uppercase; }
+    .value { font-size:1.08rem; font-weight:700; line-height:1.3; }
+    .location { grid-column:1 / -1; }
+    .callout { position:relative; z-index:1; margin:0 0 2rem; padding:1rem 1.15rem; background:var(--red); color:#fff; font-size:1.1rem; font-weight:800; line-height:1.35; }
+    .callout span { display:block; margin-top:.25rem; font-size:.82rem; font-weight:400; opacity:.9; }
+    .team-photo { position:relative; z-index:1; display:block; width:100%; height:240px; margin:0 0 2rem; object-fit:cover; object-position:center 58%; border:1px solid rgba(255,255,255,.2); }
+    .share-grid { position:relative; z-index:1; display:grid; grid-template-columns:1.35fr .65fr; gap:1rem; margin:0 0 2rem; }
+    .map-panel, .qr-panel { padding:1rem; background:rgba(23,21,23,.94); border:1px solid rgba(255,255,255,.18); }
+    .map-panel iframe { display:block; width:100%; height:170px; border:0; }
+    .map-link { display:inline-block; margin-top:.55rem; color:#fff; font-size:.78rem; text-decoration:underline; }
+    .qr-panel { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+    .qr-panel img { width:118px; height:118px; padding:.35rem; background:#fff; }
+    .qr-panel p { margin:.55rem 0 0; color:var(--muted); font-size:.72rem; line-height:1.3; }
+    .footer { position:relative; z-index:1; display:flex; justify-content:space-between; gap:1rem; align-items:end; padding-top:1.4rem; border-top:1px solid rgba(255,255,255,.2); }
+    .contact { font-size:1rem; line-height:1.6; }
+    .contact strong { display:block; color:var(--red); font-size:1.1rem; }
+    .contact a { color:#fff; text-decoration:none; }
+    .cta { padding:.85rem 1rem; background:#fff; color:#161316; font-size:.85rem; font-weight:800; text-align:center; text-transform:uppercase; letter-spacing:.06em; }
+    .note { position:relative; z-index:1; margin:2rem 0 0; color:var(--muted); font-size:.78rem; line-height:1.4; }
+    @media (max-width:560px) { .flyer { min-height:100vh; } .session { grid-template-columns:1fr; } .location { grid-column:auto; } .footer { display:block; } .cta { margin-top:1rem; } }
+    @media (max-width:560px) { .team-photo { height:190px; } .share-grid { grid-template-columns:1fr; } .map-panel iframe { height:190px; } .qr-panel { flex-direction:row; gap:1rem; text-align:left; } }
+    @media print { body { background:#fff; } .flyer { width:100%; min-height:100vh; } }
+  </style>
+</head>
+<body>
+  <main class="flyer">
+    <div class="brand">Hart Youth FC</div>
+    <h1>U6<br>Dev Squad</h1>
+    <p class="strap">A friendly first step into football for boys and girls in Year R and Year 1. Fun, skills and confidence for ages 5–6.</p>
+    <div class="hero-rule"></div>
+
+    <div class="session" aria-label="Session details">
+      <div class="session-item">
+        <span class="label">When</span>
+        <div class="value">Every Saturday<br>during term time</div>
+      </div>
+      <div class="session-item">
+        <span class="label">First session</span>
+        <div class="value">Saturday 12 September<br>2:00pm</div>
+      </div>
+      <div class="session-item location">
+        <span class="label">Where</span>
+        <div class="value">Cambridge Primary School<br>Queens Road, Wellesley, Aldershot GU11 4AA</div>
+      </div>
+    </div>
+
+    <div class="callout">All abilities welcome.<span>Come along, enjoy the game and start your football journey with Hart Youth FC.</span></div>
+
+    <img class="team-photo" src="https://images.unsplash.com/photo-1547347298-4074fc3086f0?auto=format&fit=crop&w=1200&q=80" alt="Children playing football together on a pitch">
+
+    <div class="share-grid">
+      <div class="map-panel">
+        <span class="label">Find us</span>
+        <iframe src="https://www.google.com/maps?q=Cambridge+Primary+School,+Queens+Road,+Aldershot,+Hampshire,+GU11+4AA&output=embed" title="Map showing Cambridge Primary School, Queens Road, Aldershot GU11 4AA" loading="lazy" allowfullscreen></iframe>
+        <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Cambridge+Primary+School%2C+Queens+Road%2C+Aldershot%2C+Hampshire%2C+GU11+4AA" target="_blank" rel="noopener">Open venue in Maps</a>
+      </div>
+      <div class="qr-panel">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fwww.hyfc.uk%2F" alt="QR code linking to the Hart Youth FC website">
+        <p>Scan for the Hart Youth FC website</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="contact">
+        <strong>Contact & registration</strong>
+        Jon Cragg<br>
+        <a href="tel:07584902958">07584 902958</a><br>
+        <a href="mailto:secretary@hartyouthfc.uk">secretary@hartyouthfc.uk</a>
+      </div>
+      <div class="cta">Join the squad</div>
+    </div>
+    <p class="note">Sessions are designed to be fun, welcoming and focused on early football development.</p>
+  </main>
+</body>
+</html>

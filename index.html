@@ -309,6 +309,18 @@
     </script>
     <div id="tab-container"></div>
     <script>
+        function getNavbarTabButton(page) {
+            var navbar = document.getElementById('navbar');
+            if (!navbar) return null;
+            var tablinks = navbar.getElementsByClassName('tablink');
+            for (let i = 0; i < tablinks.length; i++) {
+                if (tablinks[i].getAttribute('onclick') && tablinks[i].getAttribute('onclick').includes(page)) {
+                    return tablinks[i];
+                }
+            }
+            return null;
+        }
+
         function loadTab(url, elmnt) {
             var tablinks = document.getElementsByClassName("tablink");
             for (let i = 0; i < tablinks.length; i++) {
@@ -337,17 +349,6 @@
                                                                     var wildcatsBtn = document.getElementById('quicklink-wildcats');
                                                                     var squadBtn = document.getElementById('quicklink-squad');
                                                                     var teamSelect = document.getElementById('teamQuickSelect');
-                                                                    function getNavbarTabButton(page) {
-                                                                        var navbar = document.getElementById('navbar');
-                                                                        if (!navbar) return null;
-                                                                        var tablinks = navbar.getElementsByClassName('tablink');
-                                                                        for (let i = 0; i < tablinks.length; i++) {
-                                                                            if (tablinks[i].getAttribute('onclick') && tablinks[i].getAttribute('onclick').includes(page)) {
-                                                                                return tablinks[i];
-                                                                            }
-                                                                        }
-                                                                        return null;
-                                                                    }
                                                                     if (wildcatsBtn) {
                                                                         wildcatsBtn.onclick = function(e) {
                                                                             e.preventDefault();
@@ -504,7 +505,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <footer id="page-footer" style="width: 100%; margin-top: 2em; padding: 1em 0; background: #222; display: none;">
     <nav style="display: flex; justify-content: center; gap: 2em; flex-wrap: wrap; align-items: center;">
-        <a href="contact.html" style="color: #fff; text-decoration: none; font-size: 1em;">Contact Us</a>
+        <a href="#" onclick="loadTab('contact.html', getNavbarTabButton('contact.html')); window.scrollTo({top: 0, behavior: 'smooth'}); return false;" style="color: #fff; text-decoration: none; font-size: 1em;">Contact Us</a>
         <a href="https://www.nehyl.org.uk/" target="_blank" style="color: #fff; text-decoration: none; font-size: 1em;">NEHYL</a>
         <button class="tablink" title="opens in new tab" onclick="window.open('https://www.facebook.com/hartyouthfc/','_blank')" style="background: none; border: none; color: #fff; font-size: 1.3em; cursor: pointer;"><i class="fa fa-facebook"></i></button>
         <button class="tablink" title="opens in new tab" onclick="window.open('https://twitter.com/hartyouthfc','_blank')" style="background: none; border: none; color: #fff; font-size: 1.3em; cursor: pointer;"><i class="fa fa-twitter"></i></button>
