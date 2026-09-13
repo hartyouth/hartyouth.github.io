@@ -234,9 +234,15 @@
         thumb.style.boxShadow = '0 0 8px rgba(183,28,28,0.6)';
         thumb.style.opacity = '1';
         thumb.style.transform = 'scale(1.05)';
-        setTimeout(() => {
-          thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        }, 50);
+        if (window.thumbnailsDiv) {
+          const thumbOffsetLeft = thumb.offsetLeft;
+          const thumbWidth = thumb.offsetWidth;
+          const containerWidth = window.thumbnailsDiv.clientWidth;
+          window.thumbnailsDiv.scrollTo({
+            left: thumbOffsetLeft - (containerWidth / 2) + (thumbWidth / 2),
+            behavior: 'smooth'
+          });
+        }
       } else {
         thumb.style.border = '2px solid #333';
         thumb.style.opacity = '0.5';
