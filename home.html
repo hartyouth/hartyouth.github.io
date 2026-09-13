@@ -56,13 +56,20 @@
   </div>
 </div>
 
-<div style="max-width:700px; margin:2em auto;">
-  <h3 style="text-align:center; color:#fff;">Latest images from Hart FC</h3>
-  <div id="hartfc-gallery" style="position:relative; width:100%; height:400px; overflow:hidden; border-radius:12px; box-shadow:0 2px 8px rgba(25,118,210,0.08); background:#fff;">
-    <img id="gallery-img" src="HART_FC_1080X1080_GIRLS_CAN.jpg" alt="Hart FC Gallery" style="width:100%; height:100%; object-fit:cover; transition:opacity 0.5s;">
-    <button id="gallery-prev" style="position:absolute; top:50%; left:10px; transform:translateY(-50%); background:#1976d2; color:#fff; border:none; border-radius:50%; width:40px; height:40px; font-size:1.5em; cursor:pointer; opacity:0.7;">&#8592;</button>
-    <button id="gallery-next" style="position:absolute; top:50%; right:10px; transform:translateY(-50%); background:#1976d2; color:#fff; border:none; border-radius:50%; width:40px; height:40px; font-size:1.5em; cursor:pointer; opacity:0.7;">&#8594;</button>
-    <div id="gallery-thumbnails" style="display:flex; justify-content:center; gap:1em; margin-top:16px; position:absolute; left:0; right:0; bottom:10px; z-index:3;">
+<div style="max-width:760px; margin:2em auto;">
+  <h3 style="text-align:center; color:#fff; font-size:1.3em; margin-bottom:0.75em; text-transform:uppercase; letter-spacing:1px;">Latest Images from Hart FC</h3>
+  <div id="hartfc-gallery" style="position:relative; width:100%; border-radius:12px; overflow:hidden; border:2px solid #b71c1c; background:#000; box-shadow:0 4px 20px rgba(183,28,28,0.25);">
+    <div style="position:relative; width:100%; height:450px; background:#080808; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+      <img id="gallery-img" src="HART_FC_1080X1080_GIRLS_CAN.jpg" alt="Hart FC Gallery" style="width:100%; height:100%; object-fit:contain; transition:opacity 0.35s ease-in-out;">
+      <button id="gallery-prev" title="Previous Image" style="position:absolute; top:50%; left:12px; transform:translateY(-50%); background:rgba(0,0,0,0.65); color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:50%; width:44px; height:44px; font-size:1.1em; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px); transition:all 0.2s ease; z-index:5;">
+        <i class="fa fa-chevron-left"></i>
+      </button>
+      <button id="gallery-next" title="Next Image" style="position:absolute; top:50%; right:12px; transform:translateY(-50%); background:rgba(0,0,0,0.65); color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:50%; width:44px; height:44px; font-size:1.1em; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px); transition:all 0.2s ease; z-index:5;">
+        <i class="fa fa-chevron-right"></i>
+      </button>
+      <div id="gallery-counter" style="position:absolute; top:12px; right:12px; background:rgba(0,0,0,0.7); color:#eee; font-size:0.85em; font-weight:bold; padding:4px 12px; border-radius:20px; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.15); z-index:5;">1 / 13</div>
+    </div>
+    <div id="gallery-thumbnails" style="display:flex; align-items:center; gap:8px; padding:10px 12px; background:#121212; border-top:1px solid #222; overflow-x:auto; scrollbar-width:thin; scroll-behavior:smooth;">
       <!-- Thumbnails will be injected here -->
     </div>
   </div>
@@ -112,8 +119,12 @@
   window.prevBtn = document.getElementById('gallery-prev');
   window.nextBtn = document.getElementById('gallery-next');
   window.thumbnailsDiv = document.getElementById('gallery-thumbnails');
+  window.galleryCounter = document.getElementById('gallery-counter');
+  window.galleryContainer = document.getElementById('hartfc-gallery');
+
   window.showGalleryImg = function(idx) {
-    window.galleryImg.style.opacity = 0.3;
+    if (!window.galleryImg) return;
+    window.galleryImg.style.opacity = 0.2;
     let imgData = window.galleryImages[idx];
     let imgSrc = imgData;
     let note = "";
@@ -121,91 +132,117 @@
     if (imgData.includes("|")) {
       [imgSrc, note, link] = imgData.split("|");
     }
-    window.galleryImg.src = imgSrc;
-    // Make Greenhouse.jpg smaller in gallery
-    if (imgSrc === 'Greenhouse.jpg') {
-      window.galleryImg.style.width = '60%';
-      window.galleryImg.style.height = '60%';
-      window.galleryImg.style.display = 'block';
-      window.galleryImg.style.margin = '0 auto';
-    } else {
-      window.galleryImg.style.width = '100%';
-      window.galleryImg.style.height = '100%';
-      window.galleryImg.style.display = '';
-      window.galleryImg.style.margin = '';
-    }
-    // If kit image, use object-fit: contain and reduce height
-    if (imgSrc.includes('kit2526season')) {
-      window.galleryImg.style.objectFit = 'contain';
-      window.galleryImg.style.height = '70%';
-      window.galleryImg.style.background = '#fff';
-    } else {
-      window.galleryImg.style.objectFit = 'cover';
-      window.galleryImg.style.height = '100%';
-      window.galleryImg.style.background = '';
-    }
+    
     setTimeout(() => {
+      window.galleryImg.src = imgSrc;
+      
+      if (imgSrc === 'Greenhouse.jpg') {
+        window.galleryImg.style.objectFit = 'contain';
+        window.galleryImg.style.maxHeight = '80%';
+      } else {
+        window.galleryImg.style.objectFit = 'contain';
+        window.galleryImg.style.maxHeight = '100%';
+      }
+      
       window.galleryImg.style.opacity = 1;
-    }, 200);
-    // Show note if present
+    }, 150);
+
+    // Update Counter
+    if (window.galleryCounter) {
+      window.galleryCounter.textContent = (idx + 1) + " / " + window.galleryImages.length;
+    }
+
+    // Show note badge if present
     let noteDiv = document.getElementById('gallery-note');
     if (!noteDiv) {
       noteDiv = document.createElement('div');
       noteDiv.id = 'gallery-note';
       noteDiv.style.position = 'absolute';
-      noteDiv.style.top = '16px';
-      noteDiv.style.left = '16px';
-      noteDiv.style.background = '#1976d2';
+      noteDiv.style.top = '12px';
+      noteDiv.style.left = '12px';
+      noteDiv.style.background = '#b71c1c';
       noteDiv.style.color = '#fff';
       noteDiv.style.fontWeight = 'bold';
-      noteDiv.style.fontSize = '1.1em';
-      noteDiv.style.padding = '6px 16px';
-      noteDiv.style.borderRadius = '8px';
+      noteDiv.style.fontSize = '0.9em';
+      noteDiv.style.padding = '6px 14px';
+      noteDiv.style.borderRadius = '20px';
       noteDiv.style.zIndex = '10';
-      noteDiv.style.boxShadow = '0 2px 8px rgba(25,118,210,0.18)';
+      noteDiv.style.boxShadow = '0 2px 10px rgba(0,0,0,0.4)';
       window.galleryImg.parentNode.appendChild(noteDiv);
     }
     noteDiv.textContent = note;
     noteDiv.style.display = note ? 'block' : 'none';
-    // Make Greenhouse image clickable
+
+    // Clickable link if present
     window.galleryImg.onclick = null;
-    if (imgSrc === 'Greenhouse.jpg' && link) {
+    if (link) {
       window.galleryImg.style.cursor = 'pointer';
       window.galleryImg.onclick = function() {
         window.open(link, '_blank');
       };
+    } else {
+      window.galleryImg.style.cursor = 'default';
     }
+
     window.updateThumbnails(idx);
-  }
+  };
+
   window.moveGallery = function(delta) {
     window.galleryIndex = (window.galleryIndex + delta + window.galleryImages.length) % window.galleryImages.length;
     window.showGalleryImg(window.galleryIndex);
-    window.resetGalleryInterval();
-  }
-  window.prevBtn.onclick = function() { window.moveGallery(-1); };
-  window.nextBtn.onclick = function() { window.moveGallery(1); };
+  };
+
+  if (window.prevBtn) window.prevBtn.onclick = function() { window.moveGallery(-1); window.resetGalleryInterval(); };
+  if (window.nextBtn) window.nextBtn.onclick = function() { window.moveGallery(1); window.resetGalleryInterval(); };
+
   window.galleryInterval = setInterval(() => {
     window.moveGallery(1);
-  }, 3000);
+  }, 3500);
+
   window.resetGalleryInterval = function() {
     clearInterval(window.galleryInterval);
     window.galleryInterval = setInterval(() => {
       window.moveGallery(1);
-    }, 3000);
+    }, 3500);
+  };
+
+  if (window.galleryContainer) {
+    window.galleryContainer.onmouseenter = function() {
+      clearInterval(window.galleryInterval);
+    };
+    window.galleryContainer.onmouseleave = function() {
+      window.resetGalleryInterval();
+    };
   }
+
   window.updateThumbnails = function(activeIdx) {
+    if (!window.thumbnailsDiv) return;
     window.thumbnailsDiv.innerHTML = "";
     window.galleryImages.forEach((img, idx) => {
       let imgSrc = img.includes("|") ? img.split("|")[0] : img;
       const thumb = document.createElement('img');
       thumb.src = imgSrc;
       thumb.style.height = '48px';
-      thumb.style.width = '48px';
+      thumb.style.width = '64px';
       thumb.style.objectFit = 'cover';
       thumb.style.borderRadius = '6px';
+      thumb.style.flexShrink = '0';
       thumb.style.cursor = 'pointer';
-      thumb.style.border = idx === activeIdx ? '3px solid #1976d2' : '2px solid #ccc';
-      thumb.style.opacity = idx === activeIdx ? '1' : '0.6';
+      thumb.style.transition = 'all 0.2s ease';
+      if (idx === activeIdx) {
+        thumb.style.border = '3px solid #b71c1c';
+        thumb.style.boxShadow = '0 0 8px rgba(183,28,28,0.6)';
+        thumb.style.opacity = '1';
+        thumb.style.transform = 'scale(1.05)';
+        setTimeout(() => {
+          thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }, 50);
+      } else {
+        thumb.style.border = '2px solid #333';
+        thumb.style.opacity = '0.5';
+      }
+      thumb.onmouseenter = () => { if (idx !== activeIdx) thumb.style.opacity = '0.85'; };
+      thumb.onmouseleave = () => { if (idx !== activeIdx) thumb.style.opacity = '0.5'; };
       thumb.onclick = () => {
         window.galleryIndex = idx;
         window.showGalleryImg(idx);
@@ -213,9 +250,9 @@
       };
       window.thumbnailsDiv.appendChild(thumb);
     });
-  }
+  };
+
   window.showGalleryImg(window.galleryIndex);
-  window.updateThumbnails(window.galleryIndex);
 
   document.addEventListener('DOMContentLoaded', function() {
   var wildcatsBtn = document.getElementById('quicklink-wildcats');
