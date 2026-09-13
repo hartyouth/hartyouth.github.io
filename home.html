@@ -102,12 +102,12 @@
 // Gallery script runs immediately when loaded dynamically
   window.galleryImages = [
   "playsafe.jpg",
-  "WildcatsNew.jpg",
-  "squad.png|Squad Girls",
+  "WildcatsNew.jpg|Looking for new players! Visit the Wildcats page for more info",
+  "squad.png|Looking for new players! Visit the Squad page for more info",
   "newkit2526.png",
   "U6advert.jpeg",
   "Strikers2627.jpeg|U15 Strikers Team",
-  "U10Rockets2526.jpeg|U10 Rockets Team"
+  "U10Rockets2526.jpeg|U10 Rockets Team - Looking for new players! Get in touch at <a href='mailto:secretary@hartyouthfc.uk' style='color:#fff; text-decoration:underline;'>secretary@hartyouthfc.uk</a>|mailto:secretary@hartyouthfc.uk"
   ];
   window.galleryIndex = 0;
   window.galleryImg = document.getElementById('gallery-img');
@@ -155,17 +155,22 @@
       noteDiv.style.position = 'absolute';
       noteDiv.style.top = '12px';
       noteDiv.style.left = '12px';
-      noteDiv.style.background = '#b71c1c';
+      noteDiv.style.background = 'linear-gradient(135deg, #d32f2f, #8e0000)';
       noteDiv.style.color = '#fff';
       noteDiv.style.fontWeight = 'bold';
-      noteDiv.style.fontSize = '0.9em';
-      noteDiv.style.padding = '6px 14px';
-      noteDiv.style.borderRadius = '20px';
+      noteDiv.style.fontSize = '1em';
+      noteDiv.style.padding = '8px 16px';
+      noteDiv.style.borderRadius = '8px';
+      noteDiv.style.border = '2px solid #ff5252';
       noteDiv.style.zIndex = '10';
-      noteDiv.style.boxShadow = '0 2px 10px rgba(0,0,0,0.4)';
+      noteDiv.style.boxShadow = '0 4px 15px rgba(0,0,0,0.7), 0 0 10px rgba(255,82,82,0.5)';
+      noteDiv.style.maxWidth = 'calc(100% - 120px)';
+      noteDiv.style.lineHeight = '1.35';
+      noteDiv.style.textShadow = '0 1px 3px rgba(0,0,0,0.8)';
+      noteDiv.style.letterSpacing = '0.3px';
       window.galleryImg.parentNode.appendChild(noteDiv);
     }
-    noteDiv.textContent = note;
+    noteDiv.innerHTML = note;
     noteDiv.style.display = note ? 'block' : 'none';
 
     // Clickable link if present
