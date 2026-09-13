@@ -24,8 +24,9 @@
         <p id="homeFixturesStatus" style="text-align:center; color:#ccc;">Waiting for the FA Full-Time fixtures to load...</p>
         <div id="homeFixturesTable" style="overflow-x:auto;"></div>
       </section>
-      <p style="text-align:center;">
-        <a href="https://fulltime.thefa.com/index.html?divisionseason=363942307" target="_blank" rel="noopener" style="color:#b71c1c;">Open the report on FA Full-Time</a>
+      <p style="text-align:center; display:flex; justify-content:center; gap:1.5em; flex-wrap:wrap;">
+        <a href="https://fulltime.thefa.com/index.html?divisionseason=363942307" target="_blank" rel="noopener" style="color:#b71c1c;">NEHYL Mixed Report on FA Full-Time</a>
+        <a href="https://fulltime.thefa.com/fixtures.html?selectedSeason=309759671&selectedClub=209731724" target="_blank" rel="noopener" style="color:#b71c1c;">NEHYL Girls Report on FA Full-Time</a>
       </p>
     </section>
   </main>
@@ -40,8 +41,32 @@
       const status = document.getElementById('homeFixturesStatus');
       const observer = new MutationObserver(buildHomeFixturesTable);
 
+      const girlsHomeFixtures = [
+        { dateTime: 'Sun 27 Sept 2026 08:00', cells: ['L', 'Hart Youth U09G Snow Leopards', 'v', 'Haslemere Town U09G Harriers', 'ZEBON COPSE CENTRE Pitch 1 - 5v5'] },
+        { dateTime: 'Sun 27 Sept 2026 08:00', cells: ['L', 'Hart Youth U10G Rockets', 'v', 'Headley Youth U10G Pumas', 'ZEBON COPSE CENTRE Pitch 3 - 7v7'] },
+        { dateTime: 'Sun 04 Oct 2026 08:00', cells: ['L', 'Hart Youth U10G Rockets', 'v', 'Hook U10G Tigresses', 'ZEBON COPSE CENTRE Pitch 3 - 7v7'] },
+        { dateTime: 'Sun 04 Oct 2026 08:00', cells: ['L', 'Hart Youth U11G Galaxy', 'v', 'Mytchett Athletic U11G Wildcats Panthers', 'ZEBON COPSE CENTRE Pitch 3 - 7v7'] },
+        { dateTime: 'Sun 11 Oct 2026 08:00', cells: ['L', 'Hart Youth U09G Snow Leopards', 'v', 'Churt Girls U09G Constellation', 'ZEBON COPSE CENTRE Pitch 1 - 5v5'] },
+        { dateTime: 'Sun 18 Oct 2026 08:00', cells: ['L', 'Hart Youth U11G Galaxy', 'v', 'Pirbright U11G Comets Whites', 'ZEBON COPSE CENTRE Pitch 3 - 7v7'] },
+        { dateTime: 'Sun 08 Nov 2026 08:00', cells: ['L', 'Hart Youth U09G Snow Leopards', 'v', 'Camberley Town U09G Racoons', 'ZEBON COPSE CENTRE Pitch 1 - 5v5'] },
+        { dateTime: 'Sun 08 Nov 2026 08:00', cells: ['L', 'Hart Youth U11G Galaxy', 'v', 'Farncombe Youth U11G Lionesses', 'ZEBON COPSE CENTRE Pitch 3 - 7v7'] },
+        { dateTime: 'Sun 22 Nov 2026 08:00', cells: ['L', 'Hart Youth U09G Snow Leopards', 'v', 'Churt Girls U09G Cirrus', 'ZEBON COPSE CENTRE Pitch 1 - 5v5'] }
+      ];
+
       function clean(value) {
         return value.replace(/\s+/g, ' ').trim();
+      }
+
+      function parseDayDate(dayStr) {
+        const dmmyy = dayStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+        if (dmmyy) {
+          let year = Number(dmmyy[3]);
+          if (year < 100) year += 2000;
+          return new Date(year, Number(dmmyy[2]) - 1, Number(dmmyy[1])).getTime();
+        }
+        const parsed = Date.parse(dayStr.replace(/^(mon|tue|wed|thu|fri|sat|sun)\s+/i, ''));
+        if (!isNaN(parsed)) return parsed;
+        return 0;
       }
 
       function buildHomeFixturesTable() {
@@ -56,23 +81,27 @@
         const fallbackHeaders = ['Fixture', 'Home team', 'Status', 'Away team', 'Venue'];
         const headerCells = Array.from({ length: columnCount }, (_, index) => sourceHeaders[index] || fallbackHeaders[index] || `Detail ${index + 1}`);
         const homeIndex = headerCells.findIndex(header => /home(\s+team)?|home side/i.test(header));
+        
         let currentDateTime = '';
         const fixtureRows = [];
         rows.forEach(row => {
           const cells = Array.from(row.querySelectorAll('td')).map(cell => clean(cell.textContent));
           if (row === headerRow || !cells.length) return;
-          if (cells.length === 1 && /^(?:mon|tue|wed|thu|fri|sat|sun)\b.*\b\d{4}\b.*\b\d{1,2}:\d{2}\b/i.test(cells[0])) {
+          if (cells.length === 1 && (/(?:mon|tue|wed|thu|fri|sat|sun)/i.test(cells[0]) || /\d{2}\/\d{2}\/\d{2,4}/.test(cells[0]) || /\d{1,2}:\d{2}/.test(cells[0]))) {
             currentDateTime = cells[0];
             return;
           }
           if (currentDateTime) fixtureRows.push({ dateTime: currentDateTime, cells });
         });
-        const homeRows = fixtureRows.filter(item => {
+
+        const mixedHomeRows = fixtureRows.filter(item => {
           const homeText = homeIndex >= 0 ? item.cells[homeIndex] : item.cells[1];
           return homeText && /hart\s*youth|hart\s*fc/i.test(homeText);
         });
 
-        if (!homeRows.length) {
+        const allHomeRows = [...mixedHomeRows, ...girlsHomeFixtures];
+
+        if (!allHomeRows.length) {
           status.textContent = 'No Hart Youth FC home fixtures were found in this report.';
           return;
         }
@@ -81,12 +110,16 @@
         const displayHeaders = headerCells.filter((_, index) => index !== fixtureIndex).map(header => /status/i.test(header) ? '' : header);
         const displayHomeIndex = headerCells.slice(0, homeIndex).filter((_, index) => index !== fixtureIndex).length + 1;
         const headerHtml = ['KO', ...displayHeaders].map((header, index) => `<th style="padding:.35em .5em; border:1px solid #555; background:#000; color:#fff; white-space:nowrap;${index === displayHomeIndex ? ' text-align:right;' : ' text-align:left;'}">${escapeHtml(header)}</th>`).join('');
-        const groupedByDay = homeRows.reduce((groups, item) => {
-          const day = item.dateTime.replace(/\s+\d{1,2}:\d{2}.*$/, '');
+
+        const groupedByDay = allHomeRows.reduce((groups, item) => {
+          const day = item.dateTime.replace(/\s+\d{1,2}:\d{2}.*$/, '').trim();
           (groups[day] ||= []).push(item);
           return groups;
         }, {});
-        const daySections = Object.entries(groupedByDay).map(([day, dayRows]) => {
+
+        const sortedDays = Object.entries(groupedByDay).sort((a, b) => parseDayDate(a[0]) - parseDayDate(b[0]));
+
+        const daySections = sortedDays.map(([day, dayRows]) => {
           dayRows.sort((a, b) => {
             const homeA = a.cells[homeIndex >= 0 ? homeIndex : 1] || '';
             const homeB = b.cells[homeIndex >= 0 ? homeIndex : 1] || '';
@@ -111,7 +144,7 @@
           return section;
         });
         output.replaceChildren(...daySections);
-        status.textContent = `${homeRows.length} Hart Youth FC home fixture${homeRows.length === 1 ? '' : 's'} found.`;
+        status.textContent = `${allHomeRows.length} Hart Youth FC home fixture${allHomeRows.length === 1 ? '' : 's'} found.`;
         observer.disconnect();
       }
 
