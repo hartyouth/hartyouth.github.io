@@ -25,7 +25,7 @@
         </div>
       </details>
       <section id="homeFixtures" style="max-width:700px; margin:2em auto 0;">
-        <h2 style="padding-bottom:.4em; border-bottom:1px solid #b71c1c; color:#b71c1c; text-align:center;">Hart Youth FC home fixtures</h2>
+        <h2 style="padding-bottom:.4em; border-bottom:1px solid #b71c1c; color:#b71c1c; text-align:center;">Hart Youth FC fixtures</h2>
         <p id="homeFixturesStatus" style="text-align:center; color:#ccc;">Waiting for the FA Full-Time fixtures to load...</p>
         <div id="homeFixturesTable" style="overflow-x:auto;"></div>
       </section>
@@ -74,9 +74,10 @@
       }
 
       function buildHomeFixturesTable() {
-        let allHomeRows = [];
+        let allHartRows = [];
         let headerCells = [];
         let homeIndex = -1;
+        let awayIndex = -1;
         let fixtureIndex = -1;
 
         sources.forEach(source => {
@@ -94,7 +95,9 @@
             headerCells = currentHeaderCells;
           }
           const currentHomeIndex = currentHeaderCells.findIndex(header => /home(\s+team)?|home side/i.test(header));
+          const currentAwayIndex = currentHeaderCells.findIndex(header => /away(\s+team)?|away side/i.test(header));
           if (homeIndex < 0) homeIndex = currentHomeIndex;
+          if (awayIndex < 0) awayIndex = currentAwayIndex;
 
           let currentDateTime = '';
           rows.forEach(row => {
@@ -106,15 +109,17 @@
             }
             if (currentDateTime) {
               const hIndex = currentHomeIndex >= 0 ? currentHomeIndex : 1;
-              const homeText = cells[hIndex];
-              if (homeText && /hart\s*youth|hart\s*fc/i.test(homeText)) {
-                allHomeRows.push({ dateTime: currentDateTime, cells });
+              const aIndex = currentAwayIndex >= 0 ? currentAwayIndex : 3;
+              const isHartHome = /hart\s*youth|hart\s*fc/i.test(cells[hIndex] || '');
+              const isHartAway = /hart\s*youth|hart\s*fc/i.test(cells[aIndex] || '');
+              if (isHartHome || isHartAway) {
+                allHartRows.push({ dateTime: currentDateTime, cells, isHartHome });
               }
             }
           });
         });
 
-        if (!allHomeRows.length) {
+        if (!allHartRows.length) {
           status.textContent = 'Waiting for the FA Full-Time fixtures to load...';
           return;
         }
@@ -124,7 +129,7 @@
         const displayHomeIndex = headerCells.slice(0, homeIndex).filter((_, index) => index !== fixtureIndex).length + 1;
         const headerHtml = ['KO', ...displayHeaders].map((header, index) => `<th style="padding:.35em .5em; border:1px solid #555; background:#000; color:#fff; white-space:nowrap;${index === displayHomeIndex ? ' text-align:right;' : ' text-align:left;'}">${escapeHtml(header)}</th>`).join('');
 
-        const groupedByDay = allHomeRows.reduce((groups, item) => {
+        const groupedByDay = allHartRows.reduce((groups, item) => {
           const day = item.dateTime.replace(/\s+\d{1,2}:\d{2}.*$/, '').trim();
           (groups[day] ||= []).push(item);
           return groups;
@@ -134,15 +139,15 @@
 
         const daySections = sortedDays.map(([day, dayRows]) => {
           dayRows.sort((a, b) => {
-            const homeA = a.cells[homeIndex >= 0 ? homeIndex : 1] || '';
-            const homeB = b.cells[homeIndex >= 0 ? homeIndex : 1] || '';
-            const ageA = Number((homeA.match(/\bU(\d{1,2})\b/i) || [, 99])[1]);
-            const ageB = Number((homeB.match(/\bU(\d{1,2})\b/i) || [, 99])[1]);
-            return ageA - ageB || homeA.localeCompare(homeB);
+            const hartTeamA = a.cells[a.isHartHome ? (homeIndex >= 0 ? homeIndex : 1) : (awayIndex >= 0 ? awayIndex : 3)] || '';
+            const hartTeamB = b.cells[b.isHartHome ? (homeIndex >= 0 ? homeIndex : 1) : (awayIndex >= 0 ? awayIndex : 3)] || '';
+            const ageA = Number((hartTeamA.match(/\bU(\d{1,2})\b/i) || [, 99])[1]);
+            const ageB = Number((hartTeamB.match(/\bU(\d{1,2})\b/i) || [, 99])[1]);
+            return ageA - ageB || hartTeamA.localeCompare(hartTeamB);
           });
           const table = document.createElement('table');
           table.style.cssText = 'width:100%; min-width:max-content; border-collapse:collapse; background:#000; color:#fff; font-size:.8em;';
-          table.innerHTML = `<thead><tr>${headerHtml}</tr></thead><tbody>${dayRows.map(item => { const kickoff = (item.dateTime.match(/\b\d{1,2}:\d{2}(?:\s*[ap]m)?\b/i) || [''])[0]; const rowCells = item.cells.map((cell, index) => ({ cell, index })).filter(item => item.index !== fixtureIndex); return `<tr><td style="padding:.35em .5em; border:1px solid #444; color:#fff; white-space:nowrap; vertical-align:top;">${escapeHtml(kickoff)}</td>${rowCells.map(item => `<td style="padding:.35em .5em; border:1px solid #444; color:#fff; white-space:nowrap; vertical-align:top;${item.index === homeIndex ? ' text-align:right;' : ''}">${escapeHtml(item.cell)}</td>`).join('')}</tr>`; }).join('')}</tbody>`;
+          table.innerHTML = `<thead><tr>${headerHtml}</tr></thead><tbody>${dayRows.map(item => { const kickoff = (item.dateTime.match(/\b\d{1,2}:\d{2}(?:\s*[ap]m)?\b/i) || [''])[0]; const rowCells = item.cells.map((cell, index) => ({ cell, index })).filter(item => item.index !== fixtureIndex); return `<tr style="${item.isHartHome ? 'background:#3a1111; font-weight:700; box-shadow:inset 4px 0 #b71c1c;' : ''}"><td style="padding:.35em .5em; border:1px solid #444; color:#fff; white-space:nowrap; vertical-align:top;">${escapeHtml(kickoff)}${item.isHartHome ? ' · HOME' : ' · AWAY'}</td>${rowCells.map(item => `<td style="padding:.35em .5em; border:1px solid #444; color:#fff; white-space:nowrap; vertical-align:top;${item.index === homeIndex ? ' text-align:right;' : ''}">${escapeHtml(item.cell)}</td>`).join('')}</tr>`; }).join('')}</tbody>`;
           const section = document.createElement('section');
           section.style.cssText = 'margin-top:.75em; overflow-x:auto;';
           const details = document.createElement('details');
@@ -157,7 +162,9 @@
           return section;
         });
         output.replaceChildren(...daySections);
-        status.textContent = `${allHomeRows.length} Hart Youth FC home fixture${allHomeRows.length === 1 ? '' : 's'} found.`;
+        const homeFixtureCount = allHartRows.filter(item => item.isHartHome).length;
+        const awayFixtureCount = allHartRows.length - homeFixtureCount;
+        status.textContent = `${allHartRows.length} Hart Youth FC fixtures found: ${homeFixtureCount} home, ${awayFixtureCount} away. Home fixtures are highlighted in red.`;
       }
 
       function escapeHtml(value) {
