@@ -100,6 +100,7 @@
           if (awayIndex < 0) awayIndex = currentAwayIndex;
 
           let currentDateTime = '';
+          let pendingPostponed = false;
           rows.forEach(row => {
             const cells = Array.from(row.querySelectorAll('td')).map(cell => clean(cell.textContent));
             if (row === headerRow || !cells.length) return;
@@ -107,11 +108,20 @@
               currentDateTime = cells[0];
               return;
             }
+            if (cells.length === 1 && /^postponed$/i.test(cells[0])) {
+              pendingPostponed = true;
+              return;
+            }
             if (currentDateTime) {
               const hIndex = currentHomeIndex >= 0 ? currentHomeIndex : 1;
               const aIndex = currentAwayIndex >= 0 ? currentAwayIndex : 3;
               const isHartHome = /hart\s*youth|hart\s*fc/i.test(cells[hIndex] || '');
               const isHartAway = /hart\s*youth|hart\s*fc/i.test(cells[aIndex] || '');
+              if (pendingPostponed) {
+                const vIndex = cells.findIndex(cell => /^v$/i.test(cell));
+                if (vIndex >= 0) cells[vIndex] = 'P';
+                pendingPostponed = false;
+              }
               if (isHartHome || isHartAway) {
                 allHartRows.push({ dateTime: currentDateTime, cells, isHartHome });
               }
@@ -127,7 +137,7 @@
         fixtureIndex = headerCells.findIndex(header => /fixture/i.test(header));
         const displayHeaders = headerCells.filter((_, index) => index !== fixtureIndex).map(header => /status/i.test(header) ? '' : header);
         const displayHomeIndex = headerCells.slice(0, homeIndex).filter((_, index) => index !== fixtureIndex).length + 1;
-        const headerHtml = ['KO', ...displayHeaders].map((header, index) => `<th style="padding:.35em .5em; border:1px solid #555; background:#000; color:#fff; white-space:nowrap;${index === displayHomeIndex ? ' text-align:right;' : ' text-align:left;'}">${escapeHtml(header)}</th>`).join('');
+        const headerHtml = ['KO', ...displayHeaders].map((header, index) => `<th style="padding:.35em .5em; border:1px solid #555; background:#000; color:#fff; white-space:nowrap; font-size:.8em;${index === displayHomeIndex ? ' text-align:right;' : ' text-align:left;'}">${escapeHtml(header)}</th>`).join('');
 
         const groupedByDay = allHartRows.reduce((groups, item) => {
           const day = item.dateTime.replace(/\s+\d{1,2}:\d{2}.*$/, '').trim();
@@ -147,7 +157,7 @@
           });
           const table = document.createElement('table');
           table.style.cssText = 'width:100%; min-width:max-content; border-collapse:collapse; background:#000; color:#fff; font-size:.8em;';
-          table.innerHTML = `<thead><tr>${headerHtml}</tr></thead><tbody>${dayRows.map(item => { const kickoff = (item.dateTime.match(/\b\d{1,2}:\d{2}(?:\s*[ap]m)?\b/i) || [''])[0]; const rowCells = item.cells.map((cell, index) => ({ cell, index })).filter(item => item.index !== fixtureIndex); return `<tr style="${item.isHartHome ? 'background:#3a1111; font-weight:700; box-shadow:inset 4px 0 #b71c1c;' : ''}"><td style="padding:.35em .5em; border:1px solid #444; color:#fff; white-space:nowrap; vertical-align:top;">${escapeHtml(kickoff)}${item.isHartHome ? ' · HOME' : ' · AWAY'}</td>${rowCells.map(item => `<td style="padding:.35em .5em; border:1px solid #444; color:#fff; white-space:nowrap; vertical-align:top;${item.index === homeIndex ? ' text-align:right;' : ''}">${escapeHtml(item.cell)}</td>`).join('')}</tr>`; }).join('')}</tbody>`;
+          table.innerHTML = `<thead><tr>${headerHtml}</tr></thead><tbody>${dayRows.map(item => { const kickoff = (item.dateTime.match(/\b\d{1,2}:\d{2}(?:\s*[ap]m)?\b/i) || [''])[0]; const rowCells = item.cells.map((cell, index) => ({ cell, index })).filter(item => item.index !== fixtureIndex); return `<tr style="${item.isHartHome ? 'background:#3a1111; font-weight:700; box-shadow:inset 4px 0 #b71c1c;' : ''}"><td style="padding:.35em .5em; border:1px solid #444; color:#fff; white-space:nowrap; vertical-align:top; font-size:.8em;">${escapeHtml(kickoff)}</td>${rowCells.map(item => `<td style="padding:.35em .5em; border:1px solid #444; color:#fff; white-space:nowrap; vertical-align:top; font-size:.8em;${item.index === homeIndex ? ' text-align:right;' : ''}">${escapeHtml(item.cell)}</td>`).join('')}</tr>`; }).join('')}</tbody>`;
           const section = document.createElement('section');
           section.style.cssText = 'margin-top:.75em; overflow-x:auto;';
           const details = document.createElement('details');
