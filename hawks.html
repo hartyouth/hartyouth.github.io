@@ -12,22 +12,127 @@
     <h1 style="margin-top:0; color:white;">Welcome to the U12 Hawks Team Page</h1>
     <p><i class="fa fa-futbol-o" style="color:gold; margin-right:0.5em;"></i>The U12 Hawks are part of our mixed U12 age group, focused on fun, teamwork, and football skills for children aged 10-11.</p>
     <p>Sessions are held weekly and matches are played in local NEHYL leagues. All abilities are welcome!</p>
+    <p style="margin-bottom:0;"><i class="fa fa-envelope" style="color:#b71c1c; margin-right:0.45em;"></i>For enquiries, email the club secretary: <a href="mailto:secretary@hartyouthfc.uk" style="color:#b71c1c; text-decoration:underline;">secretary@hartyouthfc.uk</a></p>
   </section>
   <section style="border:2px solid #b71c1c; border-radius:10px; background:black; color:white; padding:1.2em; margin-bottom:1.2em; box-shadow:0 2px 8px rgba(183,28,28,0.12);">
-      <h2 style="color:white;">Team Contact</h2>
-      <div style="display:flex; align-items:center; gap:1.5em;">
-        <div style="flex:1;">
-          <p>If you would like to learn more then feel free to email <a href="mailto:secretary@hartyouthfc.uk" style="color:#b71c1c; text-decoration:underline;">secretary@hartyouthfc.uk</a></p>
-        </div>
-      </div>
-  </section>
-  <section style="border:2px solid #b71c1c; border-radius:10px; background:black; color:white; padding:1.2em; margin-bottom:1.2em; box-shadow:0 2px 8px rgba(183,28,28,0.12);">
-  <h2 style="color:white;">NEHYL Matches</h2>
-  <div id="lrepU11Hawks" style="width: 350px;">Data loading....<a href="https://fulltime.thefa.com/index.html">click here for NEHYL Fixtures</a><br/><br/><a href="http://www.thefa.com/FULL-TIME">FULL-TIME Home</a></div>
-  <script language="javascript" type="text/javascript">
-  var lrcode = 'U12Hawks'
-  </script>
-  <script language="Javascript" type="text/javascript" src="https://fulltime.thefa.com/client/api/cs1.js"></script>
+    <h2 style="color:white;">U12 Hawks Results &amp; Fixtures</h2>
+    <p id="hawksResultsStatus" style="text-align:center; color:#ccc;">Loading Hawks results and fixtures from FA Full-Time...</p>
+    <div id="hawksResultsTable" style="overflow-x:auto;"></div>
+    <div id="lrep465834223" style="display:none;">Data loading....<a href="null">click here for null</a><br/><br/><a href="http://www.thefa.com/FULL-TIME">FULL-TIME Home</a></div>
+    <div id="lrep363942307" style="display:none;">Data loading....<a href="null">click here for null</a><br/><br/><a href="http://www.thefa.com/FULL-TIME">FULL-TIME Home</a></div>
+    <script language="javascript" type="text/javascript">
+      var lrcode = '465834223'
+    </script>
+    <script language="Javascript" type="text/javascript" src="https://fulltime.thefa.com/client/api/cs1.js"></script>
+    <script>
+      (function () {
+        const source = document.getElementById('lrep465834223');
+        const fixturesSource = document.getElementById('lrep363942307');
+        const output = document.getElementById('hawksResultsTable');
+        const status = document.getElementById('hawksResultsStatus');
+        let completedResults = [];
+        let upcomingFixtures = [];
+        const resultsObserver = new MutationObserver(renderHawksResults);
+        const fixturesObserver = new MutationObserver(renderUpcomingHawksFixtures);
+
+        function loadWidget(code) {
+          const widgetScript = document.createElement('script');
+          widgetScript.src = 'https://fulltime.thefa.com/js/cs1.html?cs=' + code + '&random=' + Date.now();
+          document.head.appendChild(widgetScript);
+        }
+        loadWidget('363942307');
+
+        function clean(value) {
+          return value.replace(/\s+/g, ' ').trim();
+        }
+
+        function escapeHtml(value) {
+          return value.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+        }
+
+        function renderHawksResults() {
+          const sourceTable = source.querySelector('table');
+          if (!sourceTable) return;
+
+          const results = [];
+          let currentDate = '';
+          Array.from(sourceTable.querySelectorAll('tr')).forEach(row => {
+            const cells = Array.from(row.querySelectorAll('th, td')).map(cell => clean(cell.textContent));
+            if (!cells.length) return;
+            const dateCell = cells.find(cell => /^(?:mon|tue|wed|thu|fri|sat|sun)\b.*\b\d{4}\b/i.test(cell));
+            if (dateCell) {
+              currentDate = dateCell;
+              return;
+            }
+            if (!currentDate || !cells.some(cell => /hart\s*youth\s+u12m\s+hawks/i.test(cell))) return;
+
+            const teamIndexes = cells.map((cell, index) => ({ cell, index })).filter(item => /\bU\d{1,2}[MG]\b/i.test(item.cell));
+            if (teamIndexes.length < 2) return;
+            const homeTeam = teamIndexes[0];
+            const awayTeam = teamIndexes[1];
+            const scoreCells = cells.slice(homeTeam.index + 1, awayTeam.index).filter(cell => /^\d+$/.test(cell));
+            if (scoreCells.length < 2) return;
+            const venue = cells.slice(awayTeam.index + 1).find(cell => cell && !/^(?:L|CC|\d+L\d+)$/i.test(cell)) || '';
+            results.push({ date: currentDate, homeTeam: homeTeam.cell, awayTeam: awayTeam.cell, score: `${scoreCells[0]} - ${scoreCells[1]}`, venue });
+          });
+
+          completedResults = results;
+          renderCombinedTable();
+          resultsObserver.disconnect();
+        }
+
+        function renderUpcomingHawksFixtures() {
+          const sourceTable = fixturesSource.querySelector('table');
+          if (!sourceTable) return;
+
+          upcomingFixtures = [];
+          let currentDate = '';
+          Array.from(sourceTable.querySelectorAll('tr')).forEach(row => {
+            const cells = Array.from(row.querySelectorAll('th, td')).map(cell => clean(cell.textContent));
+            if (!cells.length) return;
+            const dateCell = cells.find(cell => /^(?:mon|tue|wed|thu|fri|sat|sun)\b.*\b\d{4}\b/i.test(cell));
+            if (dateCell) {
+              currentDate = dateCell;
+              return;
+            }
+            if (!currentDate || !cells.some(cell => /hart\s*youth\s+u12m\s+hawks/i.test(cell))) return;
+            const matchDate = Date.parse(currentDate.replace(/^(mon|tue|wed|thu|fri|sat|sun)\s+/i, ''));
+            if (matchDate <= Date.now()) return;
+
+            const teamIndexes = cells.map((cell, index) => ({ cell, index })).filter(item => /\bU\d{1,2}M\b/i.test(item.cell));
+            if (teamIndexes.length < 2) return;
+            const homeTeam = teamIndexes[0];
+            const awayTeam = teamIndexes[1];
+            const venue = cells.slice(awayTeam.index + 1).find(cell => cell && !/^(?:L|CC|\d+L\d+)$/i.test(cell)) || '';
+            upcomingFixtures.push({ date: currentDate, homeTeam: homeTeam.cell, awayTeam: awayTeam.cell, venue });
+          });
+
+          renderCombinedTable();
+          fixturesObserver.disconnect();
+        }
+
+        function renderCombinedTable() {
+          const fixtures = upcomingFixtures.map(fixture => ({ ...fixture, score: 'V' }));
+          const allMatches = [...completedResults, ...fixtures].sort((a, b) => Date.parse(a.date.replace(/^(mon|tue|wed|thu|fri|sat|sun)\s+/i, '')) - Date.parse(b.date.replace(/^(mon|tue|wed|thu|fri|sat|sun)\s+/i, '')));
+          if (!allMatches.length) {
+            status.textContent = 'No U12 Hawks results or upcoming fixtures are currently listed.';
+            output.replaceChildren();
+            return;
+          }
+
+          const table = document.createElement('table');
+          table.style.cssText = 'width:100%; min-width:max-content; border-collapse:collapse; background:#000; color:#fff; font-size:.9em;';
+          table.innerHTML = `<thead><tr><th style="padding:.45em .6em; border:1px solid #555; background:#000; color:#fff; text-align:left;">Date</th><th style="padding:.45em .6em; border:1px solid #555; background:#000; color:#fff; text-align:left;">Home team</th><th style="padding:.45em .6em; border:1px solid #555; background:#000; color:#fff; text-align:center;">Score</th><th style="padding:.45em .6em; border:1px solid #555; background:#000; color:#fff; text-align:left;">Away team</th><th style="padding:.45em .6em; border:1px solid #555; background:#000; color:#fff; text-align:left;">Venue</th></tr></thead><tbody>${allMatches.map(match => `<tr><td style="padding:.45em .6em; border:1px solid #444; color:#fff; white-space:nowrap;">${escapeHtml(match.date)}</td><td style="padding:.45em .6em; border:1px solid #444; color:#fff; white-space:nowrap;${/hawks/i.test(match.homeTeam) ? ' background:#3a1111; font-weight:700;' : ''}">${escapeHtml(match.homeTeam)}</td><td style="padding:.45em .6em; border:1px solid #444; color:#fff; text-align:center; white-space:nowrap; font-weight:700;${match.score === 'V' ? ' color:#ccc;' : ''}">${escapeHtml(match.score)}</td><td style="padding:.45em .6em; border:1px solid #444; color:#fff; white-space:nowrap;${/hawks/i.test(match.awayTeam) ? ' background:#3a1111; font-weight:700;' : ''}">${escapeHtml(match.awayTeam)}</td><td style="padding:.45em .6em; border:1px solid #444; color:#fff; white-space:nowrap;">${escapeHtml(match.venue)}</td></tr>`).join('')}</tbody>`;
+          output.replaceChildren(table);
+          status.textContent = `${completedResults.length} result${completedResults.length === 1 ? '' : 's'} and ${upcomingFixtures.length} upcoming fixture${upcomingFixtures.length === 1 ? '' : 's'} found.`;
+        }
+
+        resultsObserver.observe(source, { childList: true, subtree: true });
+        fixturesObserver.observe(fixturesSource, { childList: true, subtree: true });
+        renderHawksResults();
+        renderUpcomingHawksFixtures();
+      }());
+    </script>
   </section>
   <section style="border:2px solid #b71c1c; border-radius:10px; background:black; color:white; padding:1.2em; margin-bottom:1.2em; box-shadow:0 2px 8px rgba(183,28,28,0.12);">
     <h2 style="color:white;">Safeguarding</h2>
