@@ -24,6 +24,7 @@
     td { padding: .25rem .4rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
     td input[type=text] { width: 5rem; }
     tr.postponed td { color: var(--muted); text-decoration: line-through; }
+    tr.day-row td { padding-top: .6rem; border-bottom: 2px solid var(--line); color: var(--red); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; font-size: .8rem; }
     tr.postponed td.note { text-decoration: none; font-style: italic; }
     td select { max-width: 13rem; }
     .hint { color: var(--muted); font-size: .8rem; }
@@ -61,7 +62,7 @@
     <section>
       <h2>Home fixtures</h2>
       <table>
-        <thead><tr><th>Date</th><th>Fixture</th><th>Venue</th><th>Kick-off</th></tr></thead>
+        <thead><tr><th>Fixture</th><th>Venue</th><th>Kick-off</th></tr></thead>
         <tbody id="fixtureRows"></tbody>
       </table>
       <p class="hint">Venue and kick-off start from the FA Full-Time details where available. Check and change them as needed.</p>
@@ -159,10 +160,20 @@
       rowsEl.replaceChildren();
       if (!mine.length) {
         const td = el('td', 'No home fixtures found for this week.', 'hint');
-        td.colSpan = 4;
+        td.colSpan = 3;
         rowsEl.insertRow().append(td);
       }
+      let currentDay = null;
       mine.forEach(f => {
+        if (f.date !== currentDay) {
+          currentDay = f.date;
+          const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(f.date).getUTCDay()];
+          const header = el('td', `${dayName} ${fmtShort(f.date)}`);
+          header.colSpan = 3;
+          const headerRow = rowsEl.insertRow();
+          headerRow.className = 'day-row';
+          headerRow.append(header);
+        }
         const tr = rowsEl.insertRow();
         tr.dataset.date = fmtDate(f.date);
         const select = el('select');
@@ -177,15 +188,14 @@
         ko.value = f.kickoff;
         ko.setAttribute('aria-label', 'Kick-off for ' + f.team);
         select.setAttribute('aria-label', 'Venue for ' + f.team);
-        const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(f.date).getUTCDay()];
-        const dateCell = el('td', `${dayName} ${fmtShort(f.date)}`);
+        const fixtureCell = el('td', `${f.team} ${f.postponed ? 'P' : 'v'} ${f.opponent}`);
         if (f.cup) {
           const icon = el('span', ' \uD83C\uDFC6');
           icon.title = 'Cup fixture';
           icon.setAttribute('aria-label', 'Cup fixture');
-          dateCell.append(icon);
+          fixtureCell.append(icon);
         }
-        tr.append(dateCell, el('td', `${f.team} ${f.postponed ? 'P' : 'v'} ${f.opponent}`));
+        tr.append(fixtureCell);
         if (f.postponed) {
           tr.className = 'postponed';
           const note = el('td', 'No allocation needed', 'note');
