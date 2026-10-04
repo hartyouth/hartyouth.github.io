@@ -1,0 +1,55 @@
+name: Add pitch allocation
+
+on:
+  workflow_dispatch:
+    inputs:
+      fixture:
+        description: 'Fixture from upcoming-fixtures.csv, e.g. U9 Stormers'
+        required: true
+      venue:
+        description: 'Venue'
+        required: true
+        type: choice
+        options:
+          - Basingbourne
+          - Ancells
+          - Frogmore Leisure Centre
+          - Cambridge School
+          - Zebon Copse
+          - Alderwood
+          - Garrison
+      kickoff:
+        description: 'Kick-off time (24 hour), e.g. 09:15'
+        required: true
+      date:
+        description: 'Date (dd/mm/yyyy), only needed if the team plays twice in the week'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  add-fixture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update allocations CSV
+        env:
+          INPUT_FIXTURE: ${{ inputs.fixture }}
+          INPUT_VENUE: ${{ inputs.venue }}
+          INPUT_KICKOFF: ${{ inputs.kickoff }}
+          INPUT_DATE: ${{ inputs.date }}
+        run: python3 scripts/add_allocation.py
+
+      - name: Commit and push
+        env:
+          INPUT_FIXTURE: ${{ inputs.fixture }}
+          INPUT_VENUE: ${{ inputs.venue }}
+          INPUT_KICKOFF: ${{ inputs.kickoff }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add weekly-pitch-allocations.csv
+          git commit -m "Allocate $INPUT_FIXTURE to $INPUT_VENUE at $INPUT_KICKOFF"
+          git push
