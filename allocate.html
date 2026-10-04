@@ -33,6 +33,11 @@
     button:hover, a.btn:hover { background: var(--red-dark); }
     .status { margin: .5rem 0; color: var(--muted); font: italic .95rem Arial, sans-serif; }
     ol { margin: 0 0 .5rem; padding-left: 1.2rem; font: .9rem/1.5 Arial, sans-serif; }
+    details.raw { margin: 1rem 0; padding: .6rem .75rem; background: var(--panel); border-left: 5px solid var(--muted); border-radius: 5px; }
+    details.raw summary { cursor: pointer; color: var(--red); font: 700 .95rem Arial, sans-serif; }
+    details.raw h3 { margin: .75rem 0 .25rem; font: 700 .85rem Arial, sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+    .raw-data { max-height: 28rem; overflow: auto; font: .8rem Arial, sans-serif; }
+    .raw-data td, .raw-data th { padding: .15rem .4rem; white-space: nowrap; }
   </style>
 </head>
 <body>
@@ -45,10 +50,18 @@
 
     <p id="status" class="status" role="status">Waiting for the FA Full-Time fixtures to load...</p>
 
+    <details class="raw">
+      <summary>Show all fixtures (Mixed &amp; Girls reports) from FA Full-Time</summary>
+      <h3>Mixed</h3>
+      <div id="lrep363942307" class="raw-data">Loading...</div>
+      <h3>Girls</h3>
+      <div id="lrep297000377" class="raw-data">Loading...</div>
+    </details>
+
     <section>
       <h2>Home fixtures</h2>
       <table>
-        <thead><tr><th>Date</th><th>Fixture</th><th>Opponent</th><th>Venue</th><th>Kick-off</th></tr></thead>
+        <thead><tr><th>Date</th><th>Fixture</th><th>Venue</th><th>Kick-off</th></tr></thead>
         <tbody id="fixtureRows"></tbody>
       </table>
       <p class="hint">Venue and kick-off start from the FA Full-Time details where available. Check and change them as needed.</p>
@@ -67,10 +80,6 @@
         <span id="copyStatus" class="hint" role="status"></span>
       </div>
     </section>
-
-    <!-- Widgets from FA Full-Time (same codes as results.html) write their fixture tables into these. -->
-    <div id="lrep363942307" hidden></div>
-    <div id="lrep297000377" hidden></div>
   </main>
 
   <script>
@@ -92,6 +101,8 @@
     const mondayOf = time => time - ((new Date(time).getUTCDay() + 6) % 7) * DAY;
     const pad = n => String(n).padStart(2, '0');
     const fmtDate = time => { const d = new Date(time); return `${pad(d.getUTCDate())}/${pad(d.getUTCMonth() + 1)}/${d.getUTCFullYear()}`; };
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const fmtShort = time => { const d = new Date(time); return `${pad(d.getUTCDate())}${months[d.getUTCMonth()]}${String(d.getUTCFullYear()).slice(2)}`; };
 
     function el(tag, text, className) {
       const node = document.createElement(tag);
@@ -128,7 +139,7 @@
         const team = teamName(cells[1]);
         last = null;
         if (!team) return;
-        last = { date: day, team, opponent: cells[3], kickoff, venue: cells[4], postponed: false };
+        last = { date: day, team, opponent: cells[3], kickoff, venue: cells[4], postponed: false, cup: /cup|^cc$/i.test(cells[0]) };
         found.push(last);
       });
       return found;
@@ -148,7 +159,7 @@
       rowsEl.replaceChildren();
       if (!mine.length) {
         const td = el('td', 'No home fixtures found for this week.', 'hint');
-        td.colSpan = 5;
+        td.colSpan = 4;
         rowsEl.insertRow().append(td);
       }
       mine.forEach(f => {
@@ -166,10 +177,18 @@
         ko.value = f.kickoff;
         ko.setAttribute('aria-label', 'Kick-off for ' + f.team);
         select.setAttribute('aria-label', 'Venue for ' + f.team);
-        tr.append(el('td', tr.dataset.date), el('td', f.team), el('td', f.opponent));
+        const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(f.date).getUTCDay()];
+        const dateCell = el('td', `${dayName} ${fmtShort(f.date)}`);
+        if (f.cup) {
+          const icon = el('span', ' \uD83C\uDFC6');
+          icon.title = 'Cup fixture';
+          icon.setAttribute('aria-label', 'Cup fixture');
+          dateCell.append(icon);
+        }
+        tr.append(dateCell, el('td', `${f.team} ${f.postponed ? 'P' : 'v'} ${f.opponent}`));
         if (f.postponed) {
           tr.className = 'postponed';
-          const note = el('td', 'Postponed - no allocation needed', 'note');
+          const note = el('td', 'No allocation needed', 'note');
           note.colSpan = 2;
           tr.append(note);
           return;
@@ -202,7 +221,7 @@
     const todayUtc = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
     const comingMonday = mondayOf(todayUtc) + 7 * DAY;
     for (let w = Math.min(seasonStart, comingMonday); w <= Math.max(seasonEnd, comingMonday); w += 7 * DAY) {
-      const opt = el('option', fmtDate(w));
+      const opt = el('option', fmtShort(w));
       opt.value = w;
       weekSelect.append(opt);
     }
