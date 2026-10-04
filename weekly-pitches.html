@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Weekly Pitch Allocations - Hart Youth FC</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #64707d;
+      --paper: #f5f7f9;
+      --panel: #ffffff;
+      --line: #d9e0e7;
+      --red: #b71c1c;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: Georgia, 'Times New Roman', serif; }
+    .page { max-width: 900px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+    .masthead { border-bottom: 3px solid var(--red); padding-bottom: 1rem; }
+    .eyebrow { margin: 0 0 .35rem; color: var(--red); font: 700 .78rem/1.2 Arial, sans-serif; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(2rem, 5vw, 3rem); letter-spacing: .02em; }
+    .match-date { margin: .5rem 0 0; font-size: 1.3rem; }
+    nav { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.25rem 0; }
+    nav a { padding: .4rem .8rem; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; color: var(--red); font: 700 .85rem Arial, sans-serif; text-decoration: none; }
+    nav a:hover { background: var(--red); color: white; }
+    section { margin: 1.25rem 0; padding: 1rem; background: var(--panel); border-left: 5px solid var(--red); border-radius: 5px; box-shadow: 0 2px 6px rgba(23,32,42,.06); }
+    h2 { margin: 0 0 .6rem; font-size: 1.4rem; }
+    h3 { margin: 1rem 0 .3rem; color: var(--red); font: 700 .85rem Arial, sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+    h2 + h3 { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; font: .95rem Arial, sans-serif; }
+    th { text-align: left; padding: .45rem .5rem; color: var(--muted); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; border-bottom: 2px solid var(--line); }
+    td { padding: .55rem .5rem; border-bottom: 1px solid var(--line); }
+    tr:last-child td { border-bottom: 0; }
+    td.ko { width: 5.5rem; font-weight: 700; color: var(--red); white-space: nowrap; }
+    td.fmt { width: 4.5rem; color: var(--muted); white-space: nowrap; }
+    .none, .status { margin: 0; color: var(--muted); font: italic .95rem Arial, sans-serif; }
+    .status.error { color: var(--red); font-style: normal; font-weight: 700; }
+    footer { margin-top: 2rem; color: var(--muted); font: .85rem Arial, sans-serif; }
+    @media (max-width: 600px) { td, th { padding-left: .25rem; padding-right: .25rem; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="masthead">
+      <p class="eyebrow">Hart Youth FC</p>
+      <h1>Weekly pitch allocations</h1>
+      <p id="weekDate" class="match-date"></p>
+    </header>
+
+    <nav id="venueNav" aria-label="Venues"></nav>
+    <p id="status" class="status" role="status">Loading pitch allocations...</p>
+    <div id="results"></div>
+
+    <footer>Allocations are subject to change. Please check this page again before travelling.</footer>
+  </main>
+
+  <script>
+    // Edited weekly by the pitch allocations person.
+    const csvPath = 'weekly-pitch-allocations.csv';
+    const venues = ['Basingbourne', 'Ancells', 'Frogmore Leisure Centre', 'Cambridge School', 'Zebon Copse', 'Alderwood', 'Garrison'];
+    const status = document.getElementById('status');
+    const results = document.getElementById('results');
+    const nav = document.getElementById('venueNav');
+    const weekDate = document.getElementById('weekDate');
+
+    function parseCsv(text) {
+      const rows = [];
+      let row = [], cell = '', quoted = false;
+      for (let i = 0; i < text.length; i += 1) {
+        const c = text[i];
+        if (c === '"') {
+          if (quoted && text[i + 1] === '"') { cell += '"'; i += 1; } else { quoted = !quoted; }
+        } else if (c === ',' && !quoted) {
+          row.push(cell.trim()); cell = '';
+        } else if ((c === '\n' || c === '\r') && !quoted) {
+          if (c === '\r' && text[i + 1] === '\n') i += 1;
+          row.push(cell.trim()); rows.push(row); row = []; cell = '';
+        } else {
+          cell += c;
+        }
+      }
+      if (cell || row.length) { row.push(cell.trim()); rows.push(row); }
+      return rows.filter(r => r.some(v => v));
+    }
+
+    // Accepts dd/mm/yyyy, dd.mm.yyyy, dd-mm-yyyy or yyyy-mm-dd.
+    function parseDate(value) {
+      let m = value.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);
+      if (m) return new Date(Date.UTC(+m[3], +m[2] - 1, +m[1]));
+      m = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      return m ? new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])) : null;
+    }
+
+    // Format is worked out from the age group at the start of the fixture, e.g. "U9 Stormers".
+    function format(text) {
+      const m = text.match(/^U(\d+)\b/i);
+      if (!m) return '';
+      const age = +m[1];
+      if (age <= 7) return '3v3';
+      if (age <= 9) return '5v5';
+      if (age <= 11) return '7v7';
+      if (age <= 13) return '9v9';
+      return '11v11';
+    }
+
+    function fmt(date, opts) {
+      return date.toLocaleDateString('en-GB', { timeZone: 'UTC', ...opts });
+    }
+
+    function el(tag, text, className) {
+      const node = document.createElement(tag);
+      if (text !== undefined) node.textContent = text;
+      if (className) node.className = className;
+      return node;
+    }
+
+    function render(rows) {
+      const header = rows.shift().map(h => h.toLowerCase());
+      const col = name => header.indexOf(name);
+      const [iDate, iVenue, iTime, iFixture] = ['date', 'venue', 'kick-off', 'fixture'].map(col);
+      if ([iDate, iVenue, iTime, iFixture].includes(-1)) throw new Error('CSV needs columns: Date, Venue, Kick-off, Fixture');
+
+      const fixtures = rows.map(r => ({ date: parseDate(r[iDate] || ''), venue: r[iVenue], time: r[iTime], text: r[iFixture] }))
+        .filter(f => f.date && f.venue);
+      if (!fixtures.length) throw new Error('No fixtures found in the CSV file');
+
+      const first = new Date(Math.min(...fixtures.map(f => f.date)));
+      first.setUTCDate(first.getUTCDate() - ((first.getUTCDay() + 6) % 7));
+      weekDate.textContent = 'Week commencing ' + fmt(first, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+      const names = [...venues];
+      fixtures.forEach(f => { if (!names.some(n => n.toLowerCase() === f.venue.toLowerCase())) names.push(f.venue); });
+
+      names.forEach((name, i) => {
+        const id = 'venue-' + i;
+        const link = el('a', name);
+        link.href = '#' + id;
+        nav.append(link);
+
+        const section = el('section');
+        section.id = id;
+        section.append(el('h2', name));
+        const mine = fixtures.filter(f => f.venue.toLowerCase() === name.toLowerCase());
+        const days = [...new Set(mine.map(f => f.date.getTime()))].sort((a, b) => a - b);
+        if (!days.length) section.append(el('p', 'No fixtures this week.', 'none'));
+
+        days.forEach(day => {
+          const date = new Date(day);
+          const girls = date.getUTCDay() === 0 ? ' (Girls)' : '';
+          section.append(el('h3', fmt(date, { weekday: 'long', day: 'numeric', month: 'long' }) + girls));
+          const table = el('table');
+          const head = table.createTHead().insertRow();
+          head.append(el('th', 'Kick-off'), el('th', 'Fixture'), el('th', 'Format'));
+          const body = table.createTBody();
+          mine.filter(f => f.date.getTime() === day).sort((a, b) => a.time.localeCompare(b.time)).forEach(f => {
+            const tr = body.insertRow();
+            tr.append(el('td', f.time, 'ko'), el('td', f.text), el('td', format(f.text), 'fmt'));
+          });
+          section.append(table);
+        });
+        results.append(section);
+      });
+      status.hidden = true;
+    }
+
+    fetch(csvPath, { cache: 'no-store' })
+      .then(r => { if (!r.ok) throw new Error('Could not load ' + csvPath); return r.text(); })
+      .then(text => render(parseCsv(text)))
+      .catch(err => {
+        status.textContent = err.message + '. If opening this file directly from your computer, view it via the website instead.';
+        status.className = 'status error';
+      });
+  </script>
+</body>
+</html>
