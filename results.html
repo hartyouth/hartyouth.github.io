@@ -100,16 +100,21 @@
           if (awayIndex < 0) awayIndex = currentAwayIndex;
 
           let currentDateTime = '';
-          let pendingPostponed = false;
+          let lastItem = null;
           rows.forEach(row => {
             const cells = Array.from(row.querySelectorAll('td')).map(cell => clean(cell.textContent));
             if (row === headerRow || !cells.length) return;
             if (cells.length === 1 && (/(?:mon|tue|wed|thu|fri|sat|sun)/i.test(cells[0]) || /\d{2}\/\d{2}\/\d{2,4}/.test(cells[0]) || /\d{1,2}:\d{2}/.test(cells[0]))) {
               currentDateTime = cells[0];
+              lastItem = null;
               return;
             }
             if (cells.length === 1 && /^postponed$/i.test(cells[0])) {
-              pendingPostponed = true;
+              // The FA lists "Postponed" on the row after the fixture it applies to.
+              if (lastItem) {
+                const vIndex = lastItem.cells.findIndex(cell => /^v$/i.test(cell));
+                if (vIndex >= 0) lastItem.cells[vIndex] = 'P';
+              }
               return;
             }
             if (currentDateTime) {
@@ -117,14 +122,11 @@
               const aIndex = currentAwayIndex >= 0 ? currentAwayIndex : 3;
               const isHartHome = /hart\s*youth|hart\s*fc/i.test(cells[hIndex] || '');
               const isHartAway = /hart\s*youth|hart\s*fc/i.test(cells[aIndex] || '');
-              if (pendingPostponed) {
-                const vIndex = cells.findIndex(cell => /^v$/i.test(cell));
-                if (vIndex >= 0) cells[vIndex] = 'P';
-                pendingPostponed = false;
-              }
+              lastItem = null;
               if (isHartHome || isHartAway) {
                 const isCup = /cup|^cc$/i.test(cells[0] || '');
-                allHartRows.push({ dateTime: currentDateTime, cells, isHartHome, isCup });
+                lastItem = { dateTime: currentDateTime, cells, isHartHome, isCup };
+                allHartRows.push(lastItem);
               }
             }
           });

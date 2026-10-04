@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Allocate Pitches - Hart Youth FC</title>
+  <style>
+    :root { --ink: #17202a; --muted: #64707d; --paper: #f5f7f9; --panel: #ffffff; --line: #d9e0e7; --red: #b71c1c; --red-dark: #811313; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: Georgia, 'Times New Roman', serif; }
+    .page { max-width: 1000px; margin: 0 auto; padding: 1rem 1rem 2rem; }
+    .masthead { border-bottom: 3px solid var(--red); padding-bottom: 1rem; }
+    .eyebrow { margin: 0 0 .35rem; color: var(--red); font: 700 .78rem/1.2 Arial, sans-serif; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+    h2 { margin: 0 0 .5rem; font-size: 1.15rem; }
+    .week-pick { display: block; margin-top: .4rem; font-size: 1.1rem; }
+    select, input, textarea, button { font: .9rem Arial, sans-serif; color: var(--ink); }
+    select, input { padding: .3rem .4rem; border: 1px solid #bfc9d4; border-radius: 5px; background: white; }
+    .week-pick select { margin-left: .4rem; font-size: 1rem; }
+    section { margin: 1rem 0; padding: .75rem; background: var(--panel); border-left: 5px solid var(--red); border-radius: 5px; box-shadow: 0 2px 6px rgba(23,32,42,.06); }
+    table { width: 100%; border-collapse: collapse; font: .9rem Arial, sans-serif; }
+    th { text-align: left; padding: .25rem .4rem; color: var(--muted); font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; border-bottom: 2px solid var(--line); }
+    td { padding: .25rem .4rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    td input[type=text] { width: 5rem; }
+    tr.postponed td { color: var(--muted); text-decoration: line-through; }
+    tr.postponed td.note { text-decoration: none; font-style: italic; }
+    td select { max-width: 13rem; }
+    .hint { color: var(--muted); font-size: .8rem; }
+    textarea { width: 100%; height: 9rem; padding: .5rem; border: 1px solid #bfc9d4; border-radius: 5px; font-family: Consolas, monospace; }
+    .actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; align-items: center; }
+    button, a.btn { padding: .5rem .9rem; border: 1px solid var(--red); border-radius: 5px; background: var(--red); color: white; font-weight: 700; text-decoration: none; cursor: pointer; }
+    button:hover, a.btn:hover { background: var(--red-dark); }
+    .status { margin: .5rem 0; color: var(--muted); font: italic .95rem Arial, sans-serif; }
+    ol { margin: 0 0 .5rem; padding-left: 1.2rem; font: .9rem/1.5 Arial, sans-serif; }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="masthead">
+      <p class="eyebrow">Hart Youth FC</p>
+      <h1>Allocate pitches</h1>
+      <label class="week-pick">Week commencing <select id="weekSelect"></select></label>
+    </header>
+
+    <p id="status" class="status" role="status">Waiting for the FA Full-Time fixtures to load...</p>
+
+    <section>
+      <h2>Home fixtures</h2>
+      <table>
+        <thead><tr><th>Date</th><th>Fixture</th><th>Opponent</th><th>Venue</th><th>Kick-off</th></tr></thead>
+        <tbody id="fixtureRows"></tbody>
+      </table>
+      <p class="hint">Venue and kick-off start from the FA Full-Time details where available. Check and change them as needed.</p>
+    </section>
+
+    <section>
+      <h2>Rows for weekly-pitch-allocations.csv</h2>
+      <ol>
+        <li>Fill in the venue and kick-off (24 hour, e.g. 09:15) for each fixture.</li>
+        <li>Copy the rows below and add them to the end of the CSV on GitHub.</li>
+      </ol>
+      <textarea id="output" readonly aria-label="CSV rows"></textarea>
+      <div class="actions">
+        <button id="copyButton" type="button">Copy rows</button>
+        <a class="btn" href="https://github.com/hartyouth/hartyouth.github.io/edit/main/weekly-pitch-allocations.csv" target="_blank" rel="noopener">Open CSV on GitHub</a>
+        <span id="copyStatus" class="hint" role="status"></span>
+      </div>
+    </section>
+
+    <!-- Widgets from FA Full-Time (same codes as results.html) write their fixture tables into these. -->
+    <div id="lrep363942307" hidden></div>
+    <div id="lrep297000377" hidden></div>
+  </main>
+
+  <script>
+    const codes = ['363942307', '297000377'];
+    const venues = ['Basingbourne', 'Ancells', 'Frogmore Leisure Centre', 'Cambridge School', 'Zebon Copse', 'Alderwood', 'Garrison'];
+    // Matched against the FA venue name to pre-select a venue.
+    const venueHints = [['basingbourne', 'Basingbourne'], ['ancells', 'Ancells'], ['frogmore', 'Frogmore Leisure Centre'], ['cambridge', 'Cambridge School'], ['zebon', 'Zebon Copse'], ['alderwood', 'Alderwood'], ['garrison', 'Garrison']];
+    const seasonStart = Date.UTC(2026, 7, 31);
+    const seasonEnd = Date.UTC(2027, 5, 28);
+    const DAY = 86400000;
+    const weekSelect = document.getElementById('weekSelect');
+    const rowsEl = document.getElementById('fixtureRows');
+    const output = document.getElementById('output');
+    const status = document.getElementById('status');
+    const copyStatus = document.getElementById('copyStatus');
+    let fixtures = [];
+
+    const clean = value => value.replace(/\s+/g, ' ').trim();
+    const mondayOf = time => time - ((new Date(time).getUTCDay() + 6) % 7) * DAY;
+    const pad = n => String(n).padStart(2, '0');
+    const fmtDate = time => { const d = new Date(time); return `${pad(d.getUTCDate())}/${pad(d.getUTCMonth() + 1)}/${d.getUTCFullYear()}`; };
+
+    function el(tag, text, className) {
+      const node = document.createElement(tag);
+      if (text !== undefined) node.textContent = text;
+      if (className) node.className = className;
+      return node;
+    }
+
+    function teamName(cell) {
+      const m = cell.match(/^Hart Youth\s+U(\d+)[A-Za-z]?\s*(.*)$/i);
+      return m ? `U${Number(m[1])} ${m[2]}`.trim() : null;
+    }
+
+    function parseTable(container) {
+      const found = [];
+      let day = null, kickoff = '', last = null;
+      container.querySelectorAll('tr').forEach(row => {
+        const cells = Array.from(row.querySelectorAll('td')).map(c => clean(c.textContent));
+        if (!cells.length) return;
+        if (cells.length === 1) {
+          const m = cells[0].match(/^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\w*\s+(\d{1,2})\s+(\w{3})\w*\s+(\d{4})(?:\s+(\d{1,2}:\d{2}))?/i);
+          if (m) {
+            const month = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'].indexOf(m[2].toLowerCase());
+            day = month < 0 ? null : Date.UTC(+m[3], month, +m[1]);
+            kickoff = m[4] && m[4] !== '00:00' ? m[4] : '';
+            last = null;
+          } else if (/^postponed$/i.test(cells[0]) && last) {
+            // The FA lists "Postponed" on the row after the fixture it applies to.
+            last.postponed = true;
+          }
+          return;
+        }
+        if (cells.length < 5 || day === null) return;
+        const team = teamName(cells[1]);
+        last = null;
+        if (!team) return;
+        last = { date: day, team, opponent: cells[3], kickoff, venue: cells[4], postponed: false };
+        found.push(last);
+      });
+      return found;
+    }
+
+    function collect() {
+      fixtures = codes.flatMap(code => parseTable(document.getElementById('lrep' + code)));
+      if (!fixtures.length) return;
+      status.hidden = true;
+      showWeek();
+    }
+
+    function showWeek() {
+      const week = +weekSelect.value;
+      const mine = fixtures.filter(f => mondayOf(f.date) === week)
+        .sort((a, b) => a.date - b.date || a.team.localeCompare(b.team, undefined, { numeric: true }));
+      rowsEl.replaceChildren();
+      if (!mine.length) {
+        const td = el('td', 'No home fixtures found for this week.', 'hint');
+        td.colSpan = 5;
+        rowsEl.insertRow().append(td);
+      }
+      mine.forEach(f => {
+        const tr = rowsEl.insertRow();
+        tr.dataset.date = fmtDate(f.date);
+        const select = el('select');
+        select.append(el('option', 'Choose...'));
+        venues.forEach(v => select.append(el('option', v)));
+        const hint = venueHints.find(([key]) => f.venue.toLowerCase().includes(key));
+        select.value = hint ? hint[1] : 'Choose...';
+        const ko = el('input');
+        ko.type = 'text';
+        ko.placeholder = '09:15';
+        ko.maxLength = 5;
+        ko.value = f.kickoff;
+        ko.setAttribute('aria-label', 'Kick-off for ' + f.team);
+        select.setAttribute('aria-label', 'Venue for ' + f.team);
+        tr.append(el('td', tr.dataset.date), el('td', f.team), el('td', f.opponent));
+        if (f.postponed) {
+          tr.className = 'postponed';
+          const note = el('td', 'Postponed - no allocation needed', 'note');
+          note.colSpan = 2;
+          tr.append(note);
+          return;
+        }
+        tr.dataset.team = f.team;
+        tr.insertCell().append(select);
+        tr.insertCell().append(ko);
+        select.addEventListener('change', buildOutput);
+        ko.addEventListener('input', buildOutput);
+      });
+      buildOutput();
+    }
+
+    function buildOutput() {
+      const lines = [];
+      rowsEl.querySelectorAll('tr[data-team]').forEach(tr => {
+        const venue = tr.querySelector('select').value;
+        const m = tr.querySelector('input').value.trim().match(/^(\d{1,2})[:.](\d{2})$/);
+        const valid = m && +m[1] < 24 && +m[2] < 60;
+        tr.querySelector('input').style.borderColor = tr.querySelector('input').value && !valid ? '#b71c1c' : '';
+        if (venues.includes(venue) && valid) {
+          lines.push([tr.dataset.date, venue, `${pad(+m[1])}:${m[2]}`, tr.dataset.team].join(','));
+        }
+      });
+      output.value = lines.join('\n');
+    }
+
+    // Default to the coming Monday.
+    const today = new Date();
+    const todayUtc = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+    const comingMonday = mondayOf(todayUtc) + 7 * DAY;
+    for (let w = Math.min(seasonStart, comingMonday); w <= Math.max(seasonEnd, comingMonday); w += 7 * DAY) {
+      const opt = el('option', fmtDate(w));
+      opt.value = w;
+      weekSelect.append(opt);
+    }
+    weekSelect.value = comingMonday;
+    weekSelect.addEventListener('change', showWeek);
+
+    document.getElementById('copyButton').addEventListener('click', () => {
+      navigator.clipboard.writeText(output.value).then(
+        () => { copyStatus.textContent = 'Copied.'; },
+        () => { output.select(); copyStatus.textContent = 'Press Ctrl+C to copy.'; }
+      );
+    });
+
+    codes.forEach(code => {
+      const target = document.getElementById('lrep' + code);
+      new MutationObserver(collect).observe(target, { childList: true, subtree: true });
+      const s = document.createElement('script');
+      s.src = 'https://fulltime.thefa.com/js/cs1.html?cs=' + code + '&random=' + Date.now();
+      s.onerror = () => { status.textContent = 'Could not load fixtures from FA Full-Time.'; };
+      document.head.appendChild(s);
+    });
+  </script>
+</body>
+</html>
