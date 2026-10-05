@@ -114,6 +114,7 @@
               if (lastItem) {
                 const vIndex = lastItem.cells.findIndex(cell => /^v$/i.test(cell));
                 if (vIndex >= 0) lastItem.cells[vIndex] = 'P';
+                lastItem.postponed = true;
               }
               return;
             }
@@ -160,7 +161,7 @@
           });
           const table = document.createElement('table');
           table.style.cssText = 'width:100%; min-width:max-content; border-collapse:collapse; background:#000; color:#fff; font-size:.8em;';
-          table.innerHTML = `<thead><tr>${headerHtml}</tr></thead><tbody>${dayRows.map(item => { const kickoff = (item.dateTime.match(/\b\d{1,2}:\d{2}(?:\s*[ap]m)?\b/i) || [''])[0]; const cupIcon = item.isCup ? ' <span title="Cup fixture" aria-label="Cup fixture">\uD83C\uDFC6</span>' : ''; const rowCells = item.cells.map((cell, index) => ({ cell, index })).filter(item => item.index !== fixtureIndex); return `<tr style="${item.isHartHome ? 'background:#3a1111; font-weight:700; box-shadow:inset 4px 0 #b71c1c;' : ''}"><td style="padding:.35em .5em; border:1px solid #444; color:#fff; white-space:nowrap; vertical-align:top; font-size:.8em;">${escapeHtml(kickoff)}${cupIcon}</td>${rowCells.map(item => `<td style="padding:.35em .5em; border:1px solid #444; color:#fff; white-space:nowrap; vertical-align:top; font-size:.8em;${item.index === homeIndex ? ' text-align:right;' : ''}">${escapeHtml(item.cell)}</td>`).join('')}</tr>`; }).join('')}</tbody>`;
+          table.innerHTML = `<thead><tr>${headerHtml}</tr></thead><tbody>${dayRows.map(item => { const kickoff = (item.dateTime.match(/\b\d{1,2}:\d{2}(?:\s*[ap]m)?\b/i) || [''])[0]; const strike = item.postponed ? ' text-decoration:line-through; opacity:.7;' : ''; const cupIcon = item.isCup ? ' <span title="Cup fixture" aria-label="Cup fixture">\uD83C\uDFC6</span>' : ''; const rowCells = item.cells.map((cell, index) => ({ cell, index })).filter(item => item.index !== fixtureIndex); return `<tr style="${item.isHartHome ? 'background:#3a1111; font-weight:700; box-shadow:inset 4px 0 #b71c1c;' : ''}"><td style="padding:.35em .5em; border:1px solid #444; color:#fff; white-space:nowrap; vertical-align:top; font-size:.8em;${strike}">${escapeHtml(kickoff)}${cupIcon}</td>${rowCells.map(item => `<td style="padding:.35em .5em; border:1px solid #444; color:#fff; white-space:nowrap; vertical-align:top; font-size:.8em;${item.index === homeIndex ? ' text-align:right;' : ''}${item.cell === 'P' ? '' : strike}">${escapeHtml(item.cell)}</td>`).join('')}</tr>`; }).join('')}</tbody>`;
           const section = document.createElement('section');
           section.style.cssText = 'margin-top:.75em; overflow-x:auto;';
           const details = document.createElement('details');
