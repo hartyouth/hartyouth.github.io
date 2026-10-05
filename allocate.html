@@ -43,6 +43,11 @@
     .venue-box td.ko { width: 3.2rem; font-weight: 700; color: var(--red); white-space: nowrap; }
     .venue-box td.fmt { width: 3.2rem; color: var(--muted); white-space: nowrap; }
     .venue-box .none { margin: 0; color: var(--muted); font: italic .85rem Arial, sans-serif; }
+    .venue-box.over { outline: 2px dashed var(--red); background: #fff3b0; }
+    .venue-box.unallocated { border-left-color: var(--muted); }
+    .venue-box td.grip { width: 1.4rem; padding-left: 0; padding-right: 0; color: var(--muted); cursor: grab; user-select: none; text-align: center; }
+    .venue-box td input { width: 4rem; font-weight: 700; color: var(--red); }
+    .venue-box .drop-hint { min-height: 1.2rem; }
     details.raw h3 { margin: .75rem 0 .25rem; font: 700 .85rem Arial, sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
     .raw-data { max-height: 28rem; overflow: auto; font: .8rem Arial, sans-serif; }
     .raw-data td, .raw-data th { padding: .15rem .4rem; white-space: nowrap; }
@@ -94,6 +99,7 @@
     <section>
       <h2>Preview by venue</h2>
       <div id="preview" class="preview-grid"></div>
+      <p class="hint">Drag the &#9776; handle to move a team to another venue (on a phone, use the venue dropdown above). Kick-off times can be edited here too.</p>
     </section>
 
     <section>
@@ -125,6 +131,7 @@
     const status = document.getElementById('status');
     const copyStatus = document.getElementById('copyStatus');
     let fixtures = [];
+    let keyCounter = 0;
 
     const clean = value => value.replace(/\s+/g, ' ').trim();
     const mondayOf = time => time - ((new Date(time).getUTCDay() + 6) % 7) * DAY;
@@ -243,6 +250,7 @@
         }
         tr.dataset.team = f.team;
         tr.dataset.ms = f.date;
+        tr.dataset.key = String(keyCounter++);
         tr.insertCell().append(select);
         tr.insertCell().append(ko);
         select.addEventListener('change', buildOutput);
@@ -251,43 +259,74 @@
       buildOutput();
     }
 
-    function buildOutput() {
+    function buildOutput(redraw = true) {
       const lines = [];
       const entries = [];
       rowsEl.querySelectorAll('tr[data-team]').forEach(tr => {
         const venue = tr.querySelector('select').value;
-        const m = tr.querySelector('input').value.trim().match(/^(\d{1,2})[:.](\d{2})$/);
+        const input = tr.querySelector('input');
+        const m = input.value.trim().match(/^(\d{1,2})[:.](\d{2})$/);
         const valid = m && +m[1] < 24 && +m[2] < 60;
-        tr.querySelector('input').style.borderColor = tr.querySelector('input').value && !valid ? '#b71c1c' : '';
-        if (venues.includes(venue) && valid) {
-          const time = `${pad(+m[1])}:${m[2]}`;
-          lines.push([tr.dataset.date, venue, time, tr.dataset.team].join(','));
-          entries.push({ ms: +tr.dataset.ms, venue, time, team: tr.dataset.team });
-        }
+        input.style.borderColor = input.value && !valid ? '#b71c1c' : '';
+        const time = valid ? `${pad(+m[1])}:${m[2]}` : '';
+        if (venues.includes(venue) && valid) lines.push([tr.dataset.date, venue, time, tr.dataset.team].join(','));
+        entries.push({ key: tr.dataset.key, ms: +tr.dataset.ms, venue: venues.includes(venue) ? venue : '', time, raw: input.value.trim(), team: tr.dataset.team });
       });
       output.value = lines.join('\n');
-      renderPreview(entries);
+      if (redraw) renderPreview(entries);
+    }
+
+    function sourceRow(key) {
+      return rowsEl.querySelector(`tr[data-key="${key}"]`);
     }
 
     function renderPreview(entries) {
       const preview = document.getElementById('preview');
       preview.replaceChildren();
-      venues.forEach(venue => {
-        const box = el('div', undefined, 'venue-box');
-        box.append(el('h3', venue));
-        const mine = entries.filter(e => e.venue === venue);
-        if (!mine.length) box.append(el('p', 'No fixtures allocated yet.', 'none'));
-        [...new Set(mine.map(e => e.ms))].sort((a, b) => a - b).forEach(ms => {
+      const unallocated = entries.filter(e => !e.venue);
+      const boxes = venues.map(venue => ({ venue, name: venue, list: entries.filter(e => e.venue === venue) }));
+      if (unallocated.length) boxes.push({ venue: '', name: 'Not allocated yet', list: unallocated });
+
+      boxes.forEach(({ venue, name, list }) => {
+        const box = el('div', undefined, venue ? 'venue-box' : 'venue-box unallocated');
+        box.append(el('h3', name));
+        if (!list.length) box.append(el('p', 'Drag a team here.', 'none'));
+        [...new Set(list.map(e => e.ms))].sort((a, b) => a - b).forEach(ms => {
           box.append(el('h4', `${dayNames[new Date(ms).getUTCDay()]} ${fmtShort(ms)}`));
           const table = el('table');
           const body = table.createTBody();
-          mine.filter(e => e.ms === ms)
-            .sort((a, b) => a.time.localeCompare(b.time) || a.team.localeCompare(b.team, undefined, { numeric: true }))
+          list.filter(e => e.ms === ms)
+            .sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99') || a.team.localeCompare(b.team, undefined, { numeric: true }))
             .forEach(e => {
               const tr = body.insertRow();
-              tr.append(el('td', e.time, 'ko'), el('td', e.team), el('td', matchFormat(e.team), 'fmt'));
+              const grip = el('td', '\u2630', 'grip');
+              grip.draggable = true;
+              grip.title = 'Drag to another venue';
+              grip.addEventListener('dragstart', ev => {
+                ev.dataTransfer.setData('text/plain', e.key);
+                ev.dataTransfer.setDragImage(tr, 0, 0);
+              });
+              const ko = el('input');
+              ko.type = 'text';
+              ko.maxLength = 5;
+              ko.placeholder = '09:15';
+              ko.value = e.raw;
+              ko.setAttribute('aria-label', 'Kick-off for ' + e.team);
+              // Update the source row as you type; redraw (re-sort) once you leave the box.
+              ko.addEventListener('input', () => { sourceRow(e.key).querySelector('input').value = ko.value; buildOutput(false); });
+              ko.addEventListener('change', () => buildOutput());
+              tr.append(grip, el('td'), el('td', e.team), el('td', matchFormat(e.team), 'fmt'));
+              tr.cells[1].append(ko);
             });
           box.append(table);
+        });
+        box.addEventListener('dragover', ev => { ev.preventDefault(); box.classList.add('over'); });
+        box.addEventListener('dragleave', ev => { if (!box.contains(ev.relatedTarget)) box.classList.remove('over'); });
+        box.addEventListener('drop', ev => {
+          ev.preventDefault();
+          const tr = sourceRow(ev.dataTransfer.getData('text/plain'));
+          if (tr) tr.querySelector('select').value = venue || 'Choose...';
+          buildOutput();
         });
         preview.append(box);
       });
