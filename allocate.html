@@ -39,6 +39,22 @@
     details.raw h3 { margin: .75rem 0 .25rem; font: 700 .85rem Arial, sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
     .raw-data { max-height: 28rem; overflow: auto; font: .8rem Arial, sans-serif; }
     .raw-data td, .raw-data th { padding: .15rem .4rem; white-space: nowrap; }
+    @media (max-width: 640px) {
+      .page { padding: .75rem .5rem 1.5rem; }
+      section, details.raw { padding: .5rem; }
+      select, input, button, a.btn { font-size: 16px; }
+      thead { display: none; }
+      #fixtureRows tr { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; padding: .4rem 0; border-bottom: 1px solid var(--line); }
+      #fixtureRows td { padding: 0; border: 0; }
+      #fixtureRows tr td:first-child { flex: 1 0 100%; font-weight: 700; }
+      #fixtureRows tr.day-row { padding: .6rem 0 .2rem; border-bottom: 2px solid var(--line); }
+      #fixtureRows td select { max-width: none; width: 100%; }
+      #fixtureRows tr td:nth-child(2) { flex: 1 1 0; min-width: 0; }
+      #fixtureRows td input[type=text] { width: 5rem; }
+      #fixtureRows tr.postponed td.note { flex: 1 0 100%; }
+      textarea { height: 7rem; font-size: 13px; }
+      .actions button, .actions a.btn { flex: 1 1 auto; text-align: center; }
+    }
   </style>
 </head>
 <body>
