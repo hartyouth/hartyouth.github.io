@@ -36,6 +36,13 @@
     ol { margin: 0 0 .5rem; padding-left: 1.2rem; font: .9rem/1.5 Arial, sans-serif; }
     details.raw { margin: 1rem 0; padding: .6rem .75rem; background: var(--panel); border-left: 5px solid var(--muted); border-radius: 5px; }
     details.raw summary { cursor: pointer; color: var(--red); font: 700 .95rem Arial, sans-serif; }
+    .preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: .6rem; align-items: start; }
+    .venue-box { padding: .5rem .6rem; background: var(--paper); border-left: 4px solid var(--red); border-radius: 5px; }
+    .venue-box h3 { margin: 0 0 .25rem; font: 700 1rem Georgia, serif; color: var(--ink); text-transform: none; letter-spacing: 0; }
+    .venue-box h4 { margin: .5rem 0 .1rem; color: var(--red); font: 700 .75rem Arial, sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+    .venue-box td.ko { width: 3.2rem; font-weight: 700; color: var(--red); white-space: nowrap; }
+    .venue-box td.fmt { width: 3.2rem; color: var(--muted); white-space: nowrap; }
+    .venue-box .none { margin: 0; color: var(--muted); font: italic .85rem Arial, sans-serif; }
     details.raw h3 { margin: .75rem 0 .25rem; font: 700 .85rem Arial, sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
     .raw-data { max-height: 28rem; overflow: auto; font: .8rem Arial, sans-serif; }
     .raw-data td, .raw-data th { padding: .15rem .4rem; white-space: nowrap; }
@@ -85,6 +92,11 @@
     </section>
 
     <section>
+      <h2>Preview by venue</h2>
+      <div id="preview" class="preview-grid"></div>
+    </section>
+
+    <section>
       <h2>Rows for weekly-pitch-allocations.csv</h2>
       <ol>
         <li>Fill in the venue and kick-off (24 hour, e.g. 09:15) for each fixture.</li>
@@ -120,6 +132,16 @@
     const fmtDate = time => { const d = new Date(time); return `${pad(d.getUTCDate())}/${pad(d.getUTCMonth() + 1)}/${d.getUTCFullYear()}`; };
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const fmtShort = time => { const d = new Date(time); return `${pad(d.getUTCDate())}${months[d.getUTCMonth()]}${String(d.getUTCFullYear()).slice(2)}`; };
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    function matchFormat(team) {
+      const age = +team.match(/^U(\d+)/i)[1];
+      if (age <= 7) return '3v3';
+      if (age <= 9) return '5v5';
+      if (age <= 11) return '7v7';
+      if (age <= 13) return '9v9';
+      return '11v11';
+    }
 
     function el(tag, text, className) {
       const node = document.createElement(tag);
@@ -183,7 +205,7 @@
       mine.forEach(f => {
         if (f.date !== currentDay) {
           currentDay = f.date;
-          const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(f.date).getUTCDay()];
+          const dayName = dayNames[new Date(f.date).getUTCDay()];
           const header = el('td', `${dayName} ${fmtShort(f.date)}`);
           header.colSpan = 3;
           const headerRow = rowsEl.insertRow();
@@ -220,6 +242,7 @@
           return;
         }
         tr.dataset.team = f.team;
+        tr.dataset.ms = f.date;
         tr.insertCell().append(select);
         tr.insertCell().append(ko);
         select.addEventListener('change', buildOutput);
@@ -230,16 +253,44 @@
 
     function buildOutput() {
       const lines = [];
+      const entries = [];
       rowsEl.querySelectorAll('tr[data-team]').forEach(tr => {
         const venue = tr.querySelector('select').value;
         const m = tr.querySelector('input').value.trim().match(/^(\d{1,2})[:.](\d{2})$/);
         const valid = m && +m[1] < 24 && +m[2] < 60;
         tr.querySelector('input').style.borderColor = tr.querySelector('input').value && !valid ? '#b71c1c' : '';
         if (venues.includes(venue) && valid) {
-          lines.push([tr.dataset.date, venue, `${pad(+m[1])}:${m[2]}`, tr.dataset.team].join(','));
+          const time = `${pad(+m[1])}:${m[2]}`;
+          lines.push([tr.dataset.date, venue, time, tr.dataset.team].join(','));
+          entries.push({ ms: +tr.dataset.ms, venue, time, team: tr.dataset.team });
         }
       });
       output.value = lines.join('\n');
+      renderPreview(entries);
+    }
+
+    function renderPreview(entries) {
+      const preview = document.getElementById('preview');
+      preview.replaceChildren();
+      venues.forEach(venue => {
+        const box = el('div', undefined, 'venue-box');
+        box.append(el('h3', venue));
+        const mine = entries.filter(e => e.venue === venue);
+        if (!mine.length) box.append(el('p', 'No fixtures allocated yet.', 'none'));
+        [...new Set(mine.map(e => e.ms))].sort((a, b) => a - b).forEach(ms => {
+          box.append(el('h4', `${dayNames[new Date(ms).getUTCDay()]} ${fmtShort(ms)}`));
+          const table = el('table');
+          const body = table.createTBody();
+          mine.filter(e => e.ms === ms)
+            .sort((a, b) => a.time.localeCompare(b.time) || a.team.localeCompare(b.team, undefined, { numeric: true }))
+            .forEach(e => {
+              const tr = body.insertRow();
+              tr.append(el('td', e.time, 'ko'), el('td', e.team), el('td', matchFormat(e.team), 'fmt'));
+            });
+          box.append(table);
+        });
+        preview.append(box);
+      });
     }
 
     // Default to the coming Monday.
