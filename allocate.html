@@ -45,9 +45,18 @@
     .venue-box .none { margin: 0; color: var(--muted); font: italic .85rem Arial, sans-serif; }
     .venue-box.over { outline: 2px dashed var(--red); background: #fff3b0; }
     .venue-box.unallocated { border-left-color: var(--muted); }
-    .venue-box td.grip { width: 1.4rem; padding-left: 0; padding-right: 0; color: var(--muted); cursor: grab; user-select: none; text-align: center; }
+    .venue-box td.grip { width: 3rem; padding: .35rem 0; color: var(--red); font-size: 1.7rem; line-height: 1; cursor: grab; user-select: none; text-align: center; touch-action: none; }
+    .callout { margin: 0 0 .6rem; padding: .5rem .7rem; background: #fff3b0; border-radius: 5px; font: 700 .9rem/1.4 Arial, sans-serif; }
+    .drag-ghost { position: fixed; z-index: 10; padding: .4rem .7rem; background: var(--red); color: white; border-radius: 5px; font: 700 1rem Arial, sans-serif; pointer-events: none; transform: translate(-50%, -120%); box-shadow: 0 3px 10px rgba(0,0,0,.3); }
     .venue-box td input { width: 4rem; font-weight: 700; color: var(--red); }
     .venue-box .drop-hint { min-height: 1.2rem; }
+    .venue-box .formats { margin: 0; color: var(--muted); font: .8rem Arial, sans-serif; }
+    .venue-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .1rem .6rem; margin-bottom: .25rem; }
+    .venue-head h3 { margin: 0; }
+    .venue-box td.fmt.bad { color: var(--red); font-weight: 700; }
+    .error-banner { margin: 0 0 .6rem; padding: .5rem .7rem; background: #fde8e8; color: var(--red-dark); border: 1px solid var(--red); border-radius: 5px; font: 700 .9rem/1.4 Arial, sans-serif; }
+    .venue-box tr.format-error td { background: #fde8e8; }
+    .venue-box tr.format-error-msg td { padding-top: 0; color: var(--red-dark); font: 700 .8rem Arial, sans-serif; }
     details.raw h3 { margin: .75rem 0 .25rem; font: 700 .85rem Arial, sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
     .raw-data { max-height: 28rem; overflow: auto; font: .8rem Arial, sans-serif; }
     .raw-data td, .raw-data th { padding: .15rem .4rem; white-space: nowrap; }
@@ -98,8 +107,9 @@
 
     <section>
       <h2>Preview by venue</h2>
+      <p class="callout">Drag fixtures with the &#9776; icon</p>
+      <div id="formatErrors" class="error-banner" role="alert" hidden></div>
       <div id="preview" class="preview-grid"></div>
-      <p class="hint">Drag the &#9776; handle to move a team to another venue (on a phone, use the venue dropdown above). Kick-off times can be edited here too.</p>
     </section>
 
     <section>
@@ -119,9 +129,9 @@
 
   <script>
     const codes = ['363942307', '297000377'];
-    const venues = ['Basingbourne', 'Ancells', 'Frogmore Leisure Centre', 'Cambridge School', 'Zebon Copse', 'Alderwood', 'Garrison'];
+    const venues = ['Basingbourne', 'Ancells', 'Frogmore', 'Cambridge School', 'Zebon Copse', 'Alderwood', 'Garrison'];
     // Matched against the FA venue name to pre-select a venue.
-    const venueHints = [['basingbourne', 'Basingbourne'], ['ancells', 'Ancells'], ['frogmore', 'Frogmore Leisure Centre'], ['cambridge', 'Cambridge School'], ['zebon', 'Zebon Copse'], ['alderwood', 'Alderwood'], ['garrison', 'Garrison']];
+    const venueHints = [['basingbourne', 'Basingbourne'], ['ancells', 'Ancells'], ['frogmore', 'Frogmore'], ['cambridge', 'Cambridge School'], ['zebon', 'Zebon Copse'], ['alderwood', 'Alderwood'], ['garrison', 'Garrison']];
     const seasonStart = Date.UTC(2026, 7, 31);
     const seasonEnd = Date.UTC(2027, 5, 28);
     const DAY = 86400000;
@@ -140,6 +150,15 @@
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const fmtShort = time => { const d = new Date(time); return `${pad(d.getUTCDate())}${months[d.getUTCMonth()]}${String(d.getUTCFullYear()).slice(2)}`; };
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const venueFormats = {
+      'Basingbourne': ['9v9'],
+      'Ancells': ['11v11'],
+      'Frogmore': ['5v5', '7v7', '9v9', '11v11'],
+      'Cambridge School': ['5v5', '7v7'],
+      'Zebon Copse': ['5v5', '7v7', '11v11'],
+      'Alderwood': ['7v7', '11v11'],
+      'Garrison': ['11v11']
+    };
 
     function matchFormat(team) {
       const age = +team.match(/^U(\d+)/i)[1];
@@ -268,6 +287,11 @@
         const m = input.value.trim().match(/^(\d{1,2})[:.](\d{2})$/);
         const valid = m && +m[1] < 24 && +m[2] < 60;
         input.style.borderColor = input.value && !valid ? '#b71c1c' : '';
+        const select = tr.querySelector('select');
+        const wrongFormat = venues.includes(venue) && !venueFormats[venue].includes(matchFormat(tr.dataset.team));
+        select.style.borderColor = wrongFormat ? '#b71c1c' : '';
+        select.style.background = wrongFormat ? '#fde8e8' : '';
+        select.title = wrongFormat ? `${venue} doesn't support ${matchFormat(tr.dataset.team)}` : '';
         const time = valid ? `${pad(+m[1])}:${m[2]}` : '';
         if (venues.includes(venue) && valid) lines.push([tr.dataset.date, venue, time, tr.dataset.team].join(','));
         entries.push({ key: tr.dataset.key, ms: +tr.dataset.ms, venue: venues.includes(venue) ? venue : '', time, raw: input.value.trim(), team: tr.dataset.team });
@@ -283,13 +307,17 @@
     function renderPreview(entries) {
       const preview = document.getElementById('preview');
       preview.replaceChildren();
+      let errorCount = 0;
       const unallocated = entries.filter(e => !e.venue);
       const boxes = venues.map(venue => ({ venue, name: venue, list: entries.filter(e => e.venue === venue) }));
       if (unallocated.length) boxes.push({ venue: '', name: 'Not allocated yet', list: unallocated });
 
       boxes.forEach(({ venue, name, list }) => {
         const box = el('div', undefined, venue ? 'venue-box' : 'venue-box unallocated');
-        box.append(el('h3', name));
+        const head = el('div', undefined, 'venue-head');
+        head.append(el('h3', name));
+        if (venue) head.append(el('p', venueFormats[venue].join(', '), 'formats'));
+        box.append(head);
         if (!list.length) box.append(el('p', 'Drag a team here.', 'none'));
         [...new Set(list.map(e => e.ms))].sort((a, b) => a - b).forEach(ms => {
           box.append(el('h4', `${dayNames[new Date(ms).getUTCDay()]} ${fmtShort(ms)}`));
@@ -300,12 +328,8 @@
             .forEach(e => {
               const tr = body.insertRow();
               const grip = el('td', '\u2630', 'grip');
-              grip.draggable = true;
               grip.title = 'Drag to another venue';
-              grip.addEventListener('dragstart', ev => {
-                ev.dataTransfer.setData('text/plain', e.key);
-                ev.dataTransfer.setDragImage(tr, 0, 0);
-              });
+              grip.addEventListener('pointerdown', ev => startDrag(ev, e));
               const ko = el('input');
               ko.type = 'text';
               ko.maxLength = 5;
@@ -315,21 +339,69 @@
               // Update the source row as you type; redraw (re-sort) once you leave the box.
               ko.addEventListener('input', () => { sourceRow(e.key).querySelector('input').value = ko.value; buildOutput(false); });
               ko.addEventListener('change', () => buildOutput());
-              tr.append(grip, el('td'), el('td', e.team), el('td', matchFormat(e.team), 'fmt'));
+              const format = matchFormat(e.team);
+              const fmtCell = el('td', format, 'fmt');
+              if (venue && !venueFormats[venue].includes(format)) {
+                fmtCell.classList.add('bad');
+                fmtCell.title = `${venue} doesn't host ${format}`;
+              }
+              tr.append(grip, el('td'), el('td', e.team), fmtCell);
               tr.cells[1].append(ko);
+              if (fmtCell.classList.contains('bad')) {
+                errorCount += 1;
+                tr.classList.add('format-error');
+                const msgRow = body.insertRow();
+                msgRow.className = 'format-error-msg';
+                const msg = el('td', `\u26A0 ${e.team} is ${format}, but ${venue} only hosts ${venueFormats[venue].join(', ')}`);
+                msg.colSpan = 4;
+                msgRow.append(msg);
+              }
             });
           box.append(table);
         });
-        box.addEventListener('dragover', ev => { ev.preventDefault(); box.classList.add('over'); });
-        box.addEventListener('dragleave', ev => { if (!box.contains(ev.relatedTarget)) box.classList.remove('over'); });
-        box.addEventListener('drop', ev => {
-          ev.preventDefault();
-          const tr = sourceRow(ev.dataTransfer.getData('text/plain'));
-          if (tr) tr.querySelector('select').value = venue || 'Choose...';
-          buildOutput();
-        });
+        box.dataset.venue = venue;
         preview.append(box);
       });
+
+      const banner = document.getElementById('formatErrors');
+      banner.hidden = !errorCount;
+      banner.textContent = errorCount ? `\u26A0 ${errorCount} fixture${errorCount > 1 ? 's are' : ' is'} at a venue that doesn't support the match format. Move ${errorCount > 1 ? 'them' : 'it'} to a suitable venue.` : '';
+    }
+
+    // Pointer events so dragging works with a finger as well as a mouse.
+    function startDrag(ev, entry) {
+      ev.preventDefault();
+      const ghost = el('div', `\u2630 ${entry.team}`, 'drag-ghost');
+      document.body.append(ghost);
+      let target = null;
+      const move = e => {
+        ghost.style.left = e.clientX + 'px';
+        ghost.style.top = e.clientY + 'px';
+        const box = document.elementFromPoint(e.clientX, e.clientY)?.closest('.venue-box') || null;
+        if (box !== target) {
+          if (target) target.classList.remove('over');
+          target = box;
+          if (target) target.classList.add('over');
+        }
+      };
+      const finish = drop => {
+        window.removeEventListener('pointermove', move);
+        window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onCancel);
+        ghost.remove();
+        if (target) target.classList.remove('over');
+        const row = sourceRow(entry.key);
+        if (drop && target && row) {
+          row.querySelector('select').value = target.dataset.venue || 'Choose...';
+          buildOutput();
+        }
+      };
+      const onUp = () => finish(true);
+      const onCancel = () => finish(false);
+      window.addEventListener('pointermove', move);
+      window.addEventListener('pointerup', onUp);
+      window.addEventListener('pointercancel', onCancel);
+      move(ev);
     }
 
     // Default to the coming Monday.
